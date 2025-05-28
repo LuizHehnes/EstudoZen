@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { useTimer } from '../../hooks/useTimer';
 
 export function PlayPauseButton() {

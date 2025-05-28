@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import localforage from 'localforage';
+import { useAuth } from './AuthContext';
 
 export interface Contact {
   id: string;
@@ -38,14 +39,23 @@ interface ContactsProviderProps {
 
 export const ContactsProvider: React.FC<ContactsProviderProps> = ({ children }) => {
   const [contacts, setContacts] = useState<Contact[]>([]);
+  const { user } = useAuth();
 
   useEffect(() => {
-    loadContacts();
-  }, []);
+    if (user) {
+      loadContacts();
+    } else {
+      setContacts([]);
+    }
+  }, [user]);
+
+  const getStorageKey = () => `contacts_${user?.id}`;
 
   const loadContacts = async () => {
+    if (!user) return;
+    
     try {
-      const savedContacts = await localforage.getItem<Contact[]>('contacts');
+      const savedContacts = await localforage.getItem<Contact[]>(getStorageKey());
       if (savedContacts) {
         // converter strings de data de volta para objetos Date
         const parsedContacts = savedContacts.map(contact => ({
@@ -60,8 +70,10 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({ children }) 
   };
 
   const saveContacts = async (newContacts: Contact[]) => {
+    if (!user) return;
+    
     try {
-      await localforage.setItem('contacts', newContacts);
+      await localforage.setItem(getStorageKey(), newContacts);
       setContacts(newContacts);
     } catch (error) {
       console.error('Erro ao salvar contatos:', error);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { SoundItem } from './SoundItem';
 import { useAudioPlayer } from '../../hooks/useAudioPlayer';
 

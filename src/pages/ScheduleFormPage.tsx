@@ -131,25 +131,25 @@ export const ScheduleFormPage: React.FC = () => {
       <div className="flex items-center space-x-4">
         <button
           onClick={() => navigate('/schedule')}
-          className="p-2 text-neutral-600 hover:text-primary-600 transition-colors"
+          className="p-2 text-light-text-muted dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
         >
           <ArrowLeft size={24} />
         </button>
         
         <div>
-          <h1 className="text-3xl font-heading font-bold text-neutral-800">
+          <h1 className="text-3xl font-heading font-bold text-light-text-primary dark:text-dark-text-primary">
             {isEditing ? 'Editar Agendamento' : 'Novo Agendamento'}
           </h1>
-          <p className="text-neutral-600 mt-1">
+          <p className="text-light-text-muted dark:text-dark-text-muted mt-1">
             {isEditing ? 'Atualize as informações do agendamento' : 'Crie um novo compromisso com alertas'}
           </p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-soft p-6 space-y-6">
+      <form onSubmit={handleSubmit} className="bg-light-card dark:bg-dark-card rounded-xl shadow-soft dark:shadow-dark-soft border border-light-border dark:border-dark-border p-6 space-y-6">
         {/* titulo */}
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-neutral-700 mb-2">
+          <label htmlFor="title" className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">
             Título *
           </label>
           <input
@@ -157,19 +157,19 @@ export const ScheduleFormPage: React.FC = () => {
             id="title"
             value={formData.title}
             onChange={(e) => handleInputChange('title', e.target.value)}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
-              errors.title ? 'border-red-500' : 'border-neutral-300'
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-light-surface dark:bg-dark-surface text-light-text-primary dark:text-dark-text-primary ${
+              errors.title ? 'border-red-500' : 'border-light-border dark:border-dark-border'
             }`}
             placeholder="Ex: Prova de Matemática"
           />
           {errors.title && (
-            <p className="mt-1 text-sm text-red-600">{errors.title}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.title}</p>
           )}
         </div>
 
         {/* descrição */}
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-neutral-700 mb-2">
+          <label htmlFor="description" className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">
             Descrição
           </label>
           <textarea
@@ -177,7 +177,7 @@ export const ScheduleFormPage: React.FC = () => {
             value={formData.description}
             onChange={(e) => handleInputChange('description', e.target.value)}
             rows={3}
-            className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            className="w-full px-3 py-2 border border-light-border dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-light-surface dark:bg-dark-surface text-light-text-primary dark:text-dark-text-primary"
             placeholder="Detalhes adicionais sobre o compromisso..."
           />
         </div>
@@ -185,7 +185,7 @@ export const ScheduleFormPage: React.FC = () => {
         {/* data e hora */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="date" className="block text-sm font-medium text-neutral-700 mb-2">
+            <label htmlFor="date" className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">
               <Calendar size={16} className="inline mr-1" />
               Data *
             </label>
@@ -194,17 +194,17 @@ export const ScheduleFormPage: React.FC = () => {
               id="date"
               value={formData.date}
               onChange={(e) => handleInputChange('date', e.target.value)}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
-                errors.date ? 'border-red-500' : 'border-neutral-300'
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-light-surface dark:bg-dark-surface text-light-text-primary dark:text-dark-text-primary ${
+                errors.date ? 'border-red-500' : 'border-light-border dark:border-dark-border'
               }`}
             />
             {errors.date && (
-              <p className="mt-1 text-sm text-red-600">{errors.date}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.date}</p>
             )}
           </div>
 
           <div>
-            <label htmlFor="time" className="block text-sm font-medium text-neutral-700 mb-2">
+            <label htmlFor="time" className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">
               <Clock size={16} className="inline mr-1" />
               Horário *
             </label>
@@ -213,19 +213,19 @@ export const ScheduleFormPage: React.FC = () => {
               id="time"
               value={formData.time}
               onChange={(e) => handleInputChange('time', e.target.value)}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
-                errors.time ? 'border-red-500' : 'border-neutral-300'
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-light-surface dark:bg-dark-surface text-light-text-primary dark:text-dark-text-primary ${
+                errors.time ? 'border-red-500' : 'border-light-border dark:border-dark-border'
               }`}
             />
             {errors.time && (
-              <p className="mt-1 text-sm text-red-600">{errors.time}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.time}</p>
             )}
           </div>
         </div>
 
         {/* disciplina */}
         <div>
-          <label htmlFor="subject" className="block text-sm font-medium text-neutral-700 mb-2">
+          <label htmlFor="subject" className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">
             <BookOpen size={16} className="inline mr-1" />
             Disciplina *
           </label>
@@ -234,19 +234,19 @@ export const ScheduleFormPage: React.FC = () => {
             id="subject"
             value={formData.subject}
             onChange={(e) => handleInputChange('subject', e.target.value)}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
-              errors.subject ? 'border-red-500' : 'border-neutral-300'
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-light-surface dark:bg-dark-surface text-light-text-primary dark:text-dark-text-primary ${
+              errors.subject ? 'border-red-500' : 'border-light-border dark:border-dark-border'
             }`}
             placeholder="Ex: Matemática, História, Física..."
           />
           {errors.subject && (
-            <p className="mt-1 text-sm text-red-600">{errors.subject}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.subject}</p>
           )}
         </div>
 
         {/* alerta */}
         <div>
-          <label htmlFor="alertMinutes" className="block text-sm font-medium text-neutral-700 mb-2">
+          <label htmlFor="alertMinutes" className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">
             <Bell size={16} className="inline mr-1" />
             Alerta
           </label>
@@ -254,7 +254,7 @@ export const ScheduleFormPage: React.FC = () => {
             id="alertMinutes"
             value={formData.alertMinutes}
             onChange={(e) => handleInputChange('alertMinutes', parseInt(e.target.value))}
-            className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            className="w-full px-3 py-2 border border-light-border dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-light-surface dark:bg-dark-surface text-light-text-primary dark:text-dark-text-primary"
           >
             {alertOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -269,7 +269,7 @@ export const ScheduleFormPage: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate('/schedule')}
-            className="flex-1 py-2 px-4 border border-neutral-300 text-neutral-700 rounded-lg hover:bg-neutral-50 transition-colors"
+            className="flex-1 py-2 px-4 border border-light-border dark:border-dark-border text-light-text-secondary dark:text-dark-text-secondary rounded-lg hover:bg-light-surface dark:hover:bg-dark-surface transition-colors"
           >
             Cancelar
           </button>
@@ -277,7 +277,7 @@ export const ScheduleFormPage: React.FC = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex-1 py-2 px-4 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 py-2 px-4 bg-primary-600 hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting 
               ? 'Salvando...' 

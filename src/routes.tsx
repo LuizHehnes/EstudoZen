@@ -8,47 +8,112 @@ import { DashboardPage } from './pages/DashboardPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { ContactsPage } from './pages/ContactsPage';
 import { VoiceNotesPage } from './pages/VoiceNotesPage';
+import { TextNotesPage } from './pages/TextNotesPage';
+import { TextNoteEditorPage } from './pages/TextNoteEditorPage';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 export const router = createBrowserRouter([
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
+  {
+    path: '/register',
+    element: <RegisterPage />,
+  },
   {
     path: '/',
     element: <App />,
     children: [
       {
         index: true,
-        element: <HomePage />,
+        element: (
+          <ProtectedRoute>
+            <HomePage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/dashboard',
-        element: <DashboardPage />,
+        element: (
+          <ProtectedRoute>
+            <DashboardPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/study',
-        element: <StudyPage />,
+        element: (
+          <ProtectedRoute>
+            <StudyPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/profile',
-        element: <ProfilePage />,
+        element: (
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/schedule',
-        element: <SchedulePage />,
+        element: (
+          <ProtectedRoute>
+            <SchedulePage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/schedule/new',
-        element: <ScheduleFormPage />,
+        element: (
+          <ProtectedRoute>
+            <ScheduleFormPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/schedule/edit/:id',
-        element: <ScheduleFormPage />,
+        element: (
+          <ProtectedRoute>
+            <ScheduleFormPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/contacts',
-        element: <ContactsPage />,
+        element: (
+          <ProtectedRoute>
+            <ContactsPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/voice-notes',
-        element: <VoiceNotesPage />,
+        element: (
+          <ProtectedRoute>
+            <VoiceNotesPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/text-notes',
+        element: (
+          <ProtectedRoute>
+            <TextNotesPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/text-notes/edit/:id',
+        element: (
+          <ProtectedRoute>
+            <TextNoteEditorPage />
+          </ProtectedRoute>
+        ),
       }
     ],
   },

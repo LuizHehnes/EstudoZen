@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Pause, Volume2, VolumeX } from 'lucide-react';
+import { useStudySession } from '../../context/StudySessionContext';
 
 interface AmbientSound {
   id: string;
@@ -52,24 +53,38 @@ interface AmbientSoundsProps {
 }
 
 export const AmbientSounds: React.FC<AmbientSoundsProps> = ({ className = '' }) => {
-  const [currentSound, setCurrentSound] = useState<string | null>(null);
+  const { state, setActiveSound, recordActivity } = useStudySession();
   const [volume, setVolume] = useState(0.5);
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // sincroniza com o estado global
+  const currentSound = state.activeSound?.id || null;
 
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = isMuted ? 0 : volume;
     }
-  }, [volume, isMuted]);
+    
+    // atualiza o volume no contexto global
+    if (state.activeSound) {
+      setActiveSound({
+        ...state.activeSound,
+        volume: isMuted ? 0 : volume
+      });
+    }
+  }, [volume, isMuted, state.activeSound, setActiveSound]);
 
   const playSound = (sound: AmbientSound) => {
     if (currentSound === sound.id) {
+      // para o som atual
       if (audioRef.current) {
         audioRef.current.pause();
-        setCurrentSound(null);
       }
+      setActiveSound(null);
+      recordActivity(`Som ${sound.name} parado`);
     } else {
+      // para o som anterior se tiver
       if (audioRef.current) {
         audioRef.current.pause();
       }
@@ -94,7 +109,16 @@ export const AmbientSounds: React.FC<AmbientSoundsProps> = ({ className = '' }) 
       audio.load();
       
       audioRef.current = audio;
-      setCurrentSound(sound.id);
+      
+      // atualiza o contexto global
+      setActiveSound({
+        id: sound.id,
+        name: sound.name,
+        icon: sound.icon,
+        volume: isMuted ? 0 : volume
+      });
+      
+      recordActivity(`Som ${sound.name} iniciado`);
     }
   };
 
@@ -144,25 +168,33 @@ export const AmbientSounds: React.FC<AmbientSoundsProps> = ({ className = '' }) 
   const stopAllSounds = () => {
     if (audioRef.current) {
       audioRef.current.pause();
-      setCurrentSound(null);
     }
+    setActiveSound(null);
+    recordActivity('Todos os sons parados');
   };
 
   const toggleMute = () => {
     setIsMuted(!isMuted);
   };
 
+  // efeito p/ manter o áudio sincronizado quando o contexto muda externamente
+  useEffect(() => {
+    if (!state.activeSound && audioRef.current) {
+      audioRef.current.pause();
+    }
+  }, [state.activeSound]);
+
   return (
-    <div className={`bg-white rounded-xl shadow-soft p-6 ${className}`}>
+    <div className={`bg-light-card dark:bg-dark-card rounded-xl shadow-soft dark:shadow-dark-soft border border-light-border dark:border-dark-border p-6 ${className}`}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-neutral-800">
+        <h3 className="text-lg font-semibold text-light-text-primary dark:text-dark-text-primary">
           Sons Ambiente
         </h3>
         
         <div className="flex items-center space-x-2">
           <button
             onClick={toggleMute}
-            className="p-2 text-neutral-600 hover:text-primary-600 transition-colors"
+            className="p-2 text-light-text-muted dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
             title={isMuted ? 'Ativar som' : 'Silenciar'}
           >
             {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
@@ -175,7 +207,7 @@ export const AmbientSounds: React.FC<AmbientSoundsProps> = ({ className = '' }) 
             step="0.1"
             value={volume}
             onChange={(e) => setVolume(parseFloat(e.target.value))}
-            className="w-20 h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer"
+            className="w-20 h-2 bg-light-surface dark:bg-dark-surface rounded-lg appearance-none cursor-pointer"
             title="Volume"
           />
         </div>
@@ -188,15 +220,15 @@ export const AmbientSounds: React.FC<AmbientSoundsProps> = ({ className = '' }) 
             onClick={() => playSound(sound)}
             className={`p-4 rounded-lg border-2 transition-all duration-200 ${
               currentSound === sound.id
-                ? 'border-primary-500 bg-primary-50 text-primary-700'
-                : 'border-neutral-200 hover:border-primary-300 hover:bg-primary-25'
+                ? 'border-primary-500 dark:border-primary-400 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                : 'border-light-border dark:border-dark-border hover:border-primary-300 dark:hover:border-primary-600 hover:bg-primary-25 dark:hover:bg-primary-900/20'
             }`}
           >
             <div className="text-2xl mb-2">{sound.icon}</div>
-            <div className="text-sm font-medium">{sound.name}</div>
+            <div className="text-sm font-medium text-light-text-primary dark:text-dark-text-primary">{sound.name}</div>
             {currentSound === sound.id && (
               <div className="flex items-center justify-center mt-2">
-                <Pause size={16} className="text-primary-600" />
+                <Pause size={16} className="text-primary-600 dark:text-primary-400" />
               </div>
             )}
           </button>
@@ -204,20 +236,35 @@ export const AmbientSounds: React.FC<AmbientSoundsProps> = ({ className = '' }) 
       </div>
 
       {currentSound && (
-        <div className="mt-4 flex items-center justify-between p-3 bg-primary-50 rounded-lg">
-          <span className="text-sm text-primary-700">
-            Tocando: {ambientSounds.find(s => s.id === currentSound)?.name}
-          </span>
+        <div className="mt-4 flex items-center justify-between p-3 bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-800 rounded-lg">
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></div>
+            <span className="text-sm text-primary-700 dark:text-primary-300">
+              Tocando: {ambientSounds.find(s => s.id === currentSound)?.name}
+            </span>
+          </div>
           <button
             onClick={stopAllSounds}
-            className="text-sm text-primary-600 hover:text-primary-800 font-medium"
+            className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-200 font-medium"
           >
             Parar
           </button>
         </div>
       )}
 
-      <div className="mt-4 text-xs text-neutral-500">
+      {/* Indicador de persistência */}
+      {state.activeSound && (
+        <div className="mt-4 p-3 bg-success-50 dark:bg-success-900/20 border border-success-200 dark:border-success-800 rounded-lg">
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-2 h-2 bg-success-500 rounded-full animate-pulse"></div>
+            <span className="text-sm text-success-700 dark:text-success-300 font-medium">
+              Som será mantido ao navegar entre páginas
+            </span>
+          </div>
+        </div>
+      )}
+
+      <div className="mt-4 text-xs text-light-text-muted dark:text-dark-text-muted">
         <p>💡 Dica: Os sons de Chuva, Floresta e Café estão disponíveis em alta qualidade.</p>
         <p>Os demais sons usam tons sintéticos para demonstração.</p>
       </div>

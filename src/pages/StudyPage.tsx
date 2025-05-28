@@ -1,32 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Timer } from '../components/Timer';
 import { Stopwatch } from '../components/Timer/Stopwatch';
 import { AmbientSounds } from '../components/Audio/AmbientSounds';
 import { NotificationBlocker } from '../components/Focus/NotificationBlocker';
-import { Clock, Volume2, Shield, Mic, Target, TrendingUp, Play } from 'lucide-react';
-
-interface Goal {
-  id: number;
-  task: string;
-  completed: boolean;
-}
+import { useStudySession } from '../context/StudySessionContext';
+import { statsService } from '../services/statsService';
+import type { StatsData } from '../services/statsService';
+import { Clock, Volume2, Shield, Target, TrendingUp, Activity } from 'lucide-react';
 
 export const StudyPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'timer' | 'sounds' | 'focus' | 'stopwatch'>('timer');
-  const [goals, setGoals] = useState<Goal[]>([
-    { id: 1, task: '2 horas de matemática', completed: false },
-    { id: 2, task: 'Revisar história', completed: true },
-    { id: 3, task: 'Exercícios de física', completed: false }
-  ]);
+  const [stats, setStats] = useState<StatsData | null>(null);
+  
+  const { state: sessionState } = useStudySession();
 
-  const handleGoalToggle = (goalId: number) => {
-    setGoals(prevGoals => 
-      prevGoals.map(goal => 
-        goal.id === goalId 
-          ? { ...goal, completed: !goal.completed }
-          : goal
-      )
-    );
+  // Carrega estatísticas
+  useEffect(() => {
+    const loadStats = async () => {
+      const currentStats = await statsService.getStats();
+      setStats(currentStats);
+    };
+
+    loadStats();
+
+    // Listener para atualizações em tempo real
+    const unsubscribe = statsService.addListener((newStats) => {
+      setStats(newStats);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    if (hours > 0) {
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const formatMinutes = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    
+    if (hours > 0) {
+      return `${hours}h ${mins}min`;
+    }
+    return `${mins}min`;
   };
 
   const tabs = [
@@ -267,11 +290,11 @@ export const StudyPage: React.FC = () => {
 
         {/* sidebar */}
         <div className="space-y-6">
-          {/* quick stats */}
+          {/* sessão atual */}
           <div className="card p-6 space-y-4">
             <div className="flex items-center space-x-3">
               <div className="p-2 rounded-lg bg-accent-100 dark:bg-accent-900/30">
-                <TrendingUp className="w-5 h-5 text-accent-600 dark:text-accent-400" />
+                <Activity className="w-5 h-5 text-accent-600 dark:text-accent-400" />
               </div>
               <h3 className="text-lg font-heading font-semibold text-light-text-primary dark:text-dark-text-primary">
                 Sessão Atual
@@ -280,81 +303,82 @@ export const StudyPage: React.FC = () => {
             
             <div className="space-y-3">
               <div className="flex justify-between items-center p-3 bg-light-surface dark:bg-dark-surface rounded-lg">
-                <span className="text-sm text-light-text-muted dark:text-dark-text-muted">Tempo Total</span>
-                <span className="font-mono font-semibold text-light-text-primary dark:text-dark-text-primary">00:00</span>
+                <span className="text-sm text-light-text-muted dark:text-dark-text-muted">Tempo Cronômetro</span>
+                <span className="font-mono font-semibold text-light-text-primary dark:text-dark-text-primary">
+                  {formatTime(sessionState.stopwatch.time)}
+                </span>
               </div>
+              
               <div className="flex justify-between items-center p-3 bg-light-surface dark:bg-dark-surface rounded-lg">
-                <span className="text-sm text-light-text-muted dark:text-dark-text-muted">Pausas</span>
-                <span className="font-semibold text-light-text-primary dark:text-dark-text-primary">0</span>
+                <span className="text-sm text-light-text-muted dark:text-dark-text-muted">Status</span>
+                <span className={`font-semibold ${
+                  sessionState.stopwatch.isRunning 
+                    ? 'text-success-600 dark:text-success-400' 
+                    : 'text-light-text-muted dark:text-dark-text-muted'
+                }`}>
+                  {sessionState.stopwatch.isRunning ? 'Ativo' : 'Pausado'}
+                </span>
               </div>
-              <div className="flex justify-between items-center p-3 bg-light-surface dark:bg-dark-surface rounded-lg">
-                <span className="text-sm text-light-text-muted dark:text-dark-text-muted">Foco</span>
-                <span className="font-semibold text-success-600 dark:text-success-400">Alto</span>
-              </div>
+              
+              {sessionState.activeSound && (
+                <div className="flex justify-between items-center p-3 bg-light-surface dark:bg-dark-surface rounded-lg">
+                  <span className="text-sm text-light-text-muted dark:text-dark-text-muted">Som Ativo</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm">{sessionState.activeSound.icon}</span>
+                    <span className="font-semibold text-success-600 dark:text-success-400 text-sm">
+                      {sessionState.activeSound.name}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* quick actions */}
-          <div className="card p-6 space-y-4">
-            <h3 className="text-lg font-heading font-semibold text-light-text-primary dark:text-dark-text-primary">
-              Ações Rápidas
-            </h3>
-            
-            <div className="space-y-3">
-              <button className="w-full flex items-center space-x-3 p-4 text-left bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/30 rounded-xl transition-all duration-200 border border-primary-200 dark:border-primary-800">
+          {/* estatísticas gerais */}
+          {stats && (
+            <div className="card p-6 space-y-4">
+              <div className="flex items-center space-x-3">
                 <div className="p-2 rounded-lg bg-primary-100 dark:bg-primary-900/30">
-                  <Mic size={16} className="text-primary-600 dark:text-primary-400" />
+                  <TrendingUp className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 </div>
-                <span className="text-primary-700 dark:text-primary-300 font-medium">Gravar Nota</span>
-              </button>
+                <h3 className="text-lg font-heading font-semibold text-light-text-primary dark:text-dark-text-primary">
+                  Estatísticas
+                </h3>
+              </div>
               
-              <button className="w-full flex items-center space-x-3 p-4 text-left bg-accent-50 dark:bg-accent-900/20 hover:bg-accent-100 dark:hover:bg-accent-900/30 rounded-xl transition-all duration-200 border border-accent-200 dark:border-accent-800">
-                <div className="p-2 rounded-lg bg-accent-100 dark:bg-accent-900/30">
-                  <Clock size={16} className="text-accent-600 dark:text-accent-400" />
-                </div>
-                <span className="text-accent-700 dark:text-accent-300 font-medium">Novo Timer</span>
-              </button>
-              
-              <button className="w-full flex items-center space-x-3 p-4 text-left bg-success-50 dark:bg-success-900/20 hover:bg-success-100 dark:hover:bg-success-900/30 rounded-xl transition-all duration-200 border border-success-200 dark:border-success-800">
-                <div className="p-2 rounded-lg bg-success-100 dark:bg-success-900/30">
-                  <Shield size={16} className="text-success-600 dark:text-success-400" />
-                </div>
-                <span className="text-success-700 dark:text-success-300 font-medium">Modo Foco</span>
-              </button>
-            </div>
-          </div>
-
-          {/* today's goals */}
-          <div className="card p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-heading font-semibold text-light-text-primary dark:text-dark-text-primary">
-                Metas de Hoje
-              </h3>
-              <button className="p-1 rounded-lg hover:bg-light-surface dark:hover:bg-dark-surface transition-colors">
-                <Play size={16} className="text-light-text-muted dark:text-dark-text-muted" />
-              </button>
-            </div>
-            
-            <div className="space-y-3">
-              {goals.map((goal) => (
-                <div key={goal.id} className="flex items-center space-x-3 p-3 bg-light-surface dark:bg-dark-surface rounded-lg">
-                  <input 
-                    type="checkbox" 
-                    checked={goal.completed}
-                    onChange={() => handleGoalToggle(goal.id)}
-                    className="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-400" 
-                  />
-                  <span className={`text-sm flex-1 ${
-                    goal.completed 
-                      ? 'text-light-text-muted dark:text-dark-text-muted line-through' 
-                      : 'text-light-text-secondary dark:text-dark-text-secondary'
-                  }`}>
-                    {goal.task}
+              <div className="space-y-3">
+                <div className="flex justify-between items-center p-3 bg-light-surface dark:bg-dark-surface rounded-lg">
+                  <span className="text-sm text-light-text-muted dark:text-dark-text-muted">Tempo Total</span>
+                  <span className="font-semibold text-light-text-primary dark:text-dark-text-primary">
+                    {formatMinutes(stats.totalStudyTime)}
                   </span>
                 </div>
-              ))}
+                
+                <div className="flex justify-between items-center p-3 bg-light-surface dark:bg-dark-surface rounded-lg">
+                  <span className="text-sm text-light-text-muted dark:text-dark-text-muted">Sessões</span>
+                  <span className="font-semibold text-light-text-primary dark:text-dark-text-primary">
+                    {stats.sessionsCompleted}
+                  </span>
+                </div>
+                
+                <div className="flex justify-between items-center p-3 bg-light-surface dark:bg-dark-surface rounded-lg">
+                  <span className="text-sm text-light-text-muted dark:text-dark-text-muted">Sequência</span>
+                  <span className="font-semibold text-success-600 dark:text-success-400">
+                    {stats.studyStreak} dias
+                  </span>
+                </div>
+                
+                {stats.totalAudioTime > 0 && (
+                  <div className="flex justify-between items-center p-3 bg-light-surface dark:bg-dark-surface rounded-lg">
+                    <span className="text-sm text-light-text-muted dark:text-dark-text-muted">Com Áudio</span>
+                    <span className="font-semibold text-accent-600 dark:text-accent-400">
+                      {formatTime(stats.totalAudioTime)}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

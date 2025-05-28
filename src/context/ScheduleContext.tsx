@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import localforage from 'localforage';
+import { useAuth } from './AuthContext';
 
 export interface ScheduleItem {
   id: string;
@@ -39,10 +40,15 @@ interface ScheduleProviderProps {
 
 export const ScheduleProvider: React.FC<ScheduleProviderProps> = ({ children }) => {
   const [schedules, setSchedules] = useState<ScheduleItem[]>([]);
+  const { user } = useAuth();
 
   useEffect(() => {
-    loadSchedules();
-  }, []);
+    if (user) {
+      loadSchedules();
+    } else {
+      setSchedules([]);
+    }
+  }, [user]);
 
   useEffect(() => {
     // verifica alertas a cada minuto
@@ -50,9 +56,13 @@ export const ScheduleProvider: React.FC<ScheduleProviderProps> = ({ children }) 
     return () => clearInterval(interval);
   }, [schedules]);
 
+  const getStorageKey = () => `schedules_${user?.id}`;
+
   const loadSchedules = async () => {
+    if (!user) return;
+    
     try {
-      const savedSchedules = await localforage.getItem<ScheduleItem[]>('schedules');
+      const savedSchedules = await localforage.getItem<ScheduleItem[]>(getStorageKey());
       if (savedSchedules) {
         // converter strings de data de volta para objetos Date
         const parsedSchedules = savedSchedules.map(schedule => ({
@@ -68,8 +78,10 @@ export const ScheduleProvider: React.FC<ScheduleProviderProps> = ({ children }) 
   };
 
   const saveSchedules = async (newSchedules: ScheduleItem[]) => {
+    if (!user) return;
+    
     try {
-      await localforage.setItem('schedules', newSchedules);
+      await localforage.setItem(getStorageKey(), newSchedules);
       setSchedules(newSchedules);
     } catch (error) {
       console.error('Erro ao salvar agendamentos:', error);

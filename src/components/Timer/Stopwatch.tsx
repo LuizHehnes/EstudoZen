@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, Square, RotateCcw } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { Play, Pause, Square, RotateCcw, Maximize2 } from 'lucide-react';
+import { useStudySession } from '../../context/StudySessionContext';
+import { useStudyMode } from '../../context/StudyModeContext';
 
 interface StopwatchProps {
   onTimeUpdate?: (time: number) => void;
@@ -7,32 +9,20 @@ interface StopwatchProps {
 }
 
 export const Stopwatch: React.FC<StopwatchProps> = ({ onTimeUpdate, className = '' }) => {
-  const [time, setTime] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
-  const intervalRef = useRef<number | null>(null);
+  const { state, startStopwatch, pauseStopwatch, resetStopwatch, recordActivity } = useStudySession();
+  const { enterStudyMode } = useStudyMode();
 
+  // Notifica mudanças de tempo para componentes pai
   useEffect(() => {
-    if (isRunning) {
-      intervalRef.current = setInterval(() => {
-        setTime(prevTime => {
-          const newTime = prevTime + 1;
-          onTimeUpdate?.(newTime);
-          return newTime;
-        });
-      }, 1000);
-    } else {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    }
+    onTimeUpdate?.(state.stopwatch.time);
+  }, [state.stopwatch.time, onTimeUpdate]);
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [isRunning, onTimeUpdate]);
+  // Registra atividade quando o cronômetro é usado
+  useEffect(() => {
+    if (state.stopwatch.isRunning) {
+      recordActivity('Cronômetro iniciado');
+    }
+  }, [state.stopwatch.isRunning, recordActivity]);
 
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
@@ -46,41 +36,53 @@ export const Stopwatch: React.FC<StopwatchProps> = ({ onTimeUpdate, className = 
   };
 
   const handlePlay = () => {
-    setIsRunning(true);
+    startStopwatch();
   };
 
   const handlePause = () => {
-    setIsRunning(false);
+    pauseStopwatch();
   };
 
   const handleStop = () => {
-    setIsRunning(false);
-    setTime(0);
-    onTimeUpdate?.(0);
+    resetStopwatch();
+    recordActivity('Cronômetro parado');
   };
 
   const handleReset = () => {
-    setIsRunning(false);
-    setTime(0);
-    onTimeUpdate?.(0);
+    resetStopwatch();
+    recordActivity('Cronômetro resetado');
+  };
+
+  const handleStudyMode = () => {
+    enterStudyMode();
+    recordActivity('Modo estudo ativado');
   };
 
   return (
-    <div className={`bg-white rounded-xl shadow-soft p-6 ${className}`}>
+    <div className={`bg-light-card dark:bg-dark-card rounded-xl shadow-soft dark:shadow-dark-soft border border-light-border dark:border-dark-border p-6 ${className}`}>
       <div className="text-center">
-        <h3 className="text-lg font-semibold text-neutral-800 mb-4">
-          Cronômetro de Sessão
-        </h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-light-text-primary dark:text-dark-text-primary">
+            Cronômetro de Sessão
+          </h3>
+          <button
+            onClick={handleStudyMode}
+            className="p-2 rounded-lg bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 hover:bg-primary-200 dark:hover:bg-primary-900/50 transition-colors"
+            title="Modo Estudo (Tela Cheia)"
+          >
+            <Maximize2 size={20} />
+          </button>
+        </div>
         
-        <div className="text-4xl font-mono font-bold text-primary-600 mb-6">
-          {formatTime(time)}
+        <div className="text-4xl font-mono font-bold text-primary-600 dark:text-primary-400 mb-6">
+          {formatTime(state.stopwatch.time)}
         </div>
 
         <div className="flex justify-center space-x-3">
-          {!isRunning ? (
+          {!state.stopwatch.isRunning ? (
             <button
               onClick={handlePlay}
-              className="flex items-center justify-center w-12 h-12 bg-green-500 hover:bg-green-600 text-white rounded-full transition-colors"
+              className="flex items-center justify-center w-12 h-12 bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white rounded-full transition-colors"
               title="Iniciar"
             >
               <Play size={20} fill="currentColor" />
@@ -88,7 +90,7 @@ export const Stopwatch: React.FC<StopwatchProps> = ({ onTimeUpdate, className = 
           ) : (
             <button
               onClick={handlePause}
-              className="flex items-center justify-center w-12 h-12 bg-yellow-500 hover:bg-yellow-600 text-white rounded-full transition-colors"
+              className="flex items-center justify-center w-12 h-12 bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700 text-white rounded-full transition-colors"
               title="Pausar"
             >
               <Pause size={20} fill="currentColor" />
@@ -97,7 +99,7 @@ export const Stopwatch: React.FC<StopwatchProps> = ({ onTimeUpdate, className = 
 
           <button
             onClick={handleStop}
-            className="flex items-center justify-center w-12 h-12 bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors"
+            className="flex items-center justify-center w-12 h-12 bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white rounded-full transition-colors"
             title="Parar"
           >
             <Square size={20} fill="currentColor" />
@@ -105,18 +107,40 @@ export const Stopwatch: React.FC<StopwatchProps> = ({ onTimeUpdate, className = 
 
           <button
             onClick={handleReset}
-            className="flex items-center justify-center w-12 h-12 bg-neutral-500 hover:bg-neutral-600 text-white rounded-full transition-colors"
+            className="flex items-center justify-center w-12 h-12 bg-light-text-muted hover:bg-light-text-secondary dark:bg-dark-text-muted dark:hover:bg-dark-text-secondary text-white rounded-full transition-colors"
             title="Resetar"
           >
             <RotateCcw size={20} />
           </button>
         </div>
 
-        {time > 0 && (
-          <div className="mt-4 text-sm text-neutral-600">
-            {isRunning ? 'Cronômetro em execução...' : 'Cronômetro pausado'}
+        {state.stopwatch.time > 0 && (
+          <div className="mt-4 text-sm text-light-text-muted dark:text-dark-text-muted">
+            {state.stopwatch.isRunning ? 'Cronômetro em execução...' : 'Cronômetro pausado'}
           </div>
         )}
+
+        {/* Indicador de sessão persistente */}
+        {(state.stopwatch.isRunning || state.stopwatch.time > 0) && (
+          <div className="mt-4 p-3 bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-lg">
+            <div className="flex items-center justify-center space-x-2">
+              <div className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></div>
+              <span className="text-sm text-primary-700 dark:text-primary-300 font-medium">
+                Sessão será mantida ao navegar entre páginas
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Dica sobre modo estudo */}
+        <div className="mt-4 p-3 bg-accent-50 dark:bg-accent-900/20 border border-accent-200 dark:border-accent-800 rounded-lg">
+          <div className="flex items-center justify-center space-x-2">
+            <Maximize2 size={16} className="text-accent-600 dark:text-accent-400" />
+            <span className="text-sm text-accent-700 dark:text-accent-300">
+              Use o modo estudo para foco total
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { statsService, type StatsData } from '../../services/statsService';
 import { ChartCard } from './ChartCard';
-import { Clock, Target, TrendingUp, Calendar } from 'lucide-react';
+import { Clock, Target, TrendingUp, Calendar, Database, Trash2 } from 'lucide-react';
 
 type FilterPeriod = 'week' | 'month' | 'all';
 
@@ -223,17 +223,48 @@ export function StatsDashboard() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center space-x-3">
-        <div className="p-2 rounded-lg bg-primary-100 dark:bg-primary-900/30">
-          <TrendingUp className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 rounded-lg bg-primary-100 dark:bg-primary-900/30">
+            <TrendingUp className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-heading font-bold text-light-text-primary dark:text-dark-text-primary">
+              Estatísticas de Estudo
+            </h2>
+            <p className="text-light-text-muted dark:text-dark-text-muted">
+              Acompanhe seu progresso e desempenho
+            </p>
+          </div>
         </div>
-        <div>
-          <h2 className="text-2xl font-heading font-bold text-light-text-primary dark:text-dark-text-primary">
-            Estatísticas de Estudo
-          </h2>
-          <p className="text-light-text-muted dark:text-dark-text-muted">
-            Acompanhe seu progresso e desempenho
-          </p>
+
+        {/* Botões de desenvolvimento */}
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={async () => {
+              if (confirm('Isso irá popular o sistema com dados de teste. Continuar?')) {
+                await statsService.populateTestData();
+              }
+            }}
+            className="flex items-center space-x-2 px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm transition-colors"
+            title="Popular dados de teste"
+          >
+            <Database className="w-4 h-4" />
+            <span>Dados de Teste</span>
+          </button>
+          
+          <button
+            onClick={async () => {
+              if (confirm('Isso irá limpar TODOS os dados de estatísticas. Esta ação não pode ser desfeita. Continuar?')) {
+                await statsService.clearAllData();
+              }
+            }}
+            className="flex items-center space-x-2 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm transition-colors"
+            title="Limpar todos os dados"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span>Limpar</span>
+          </button>
         </div>
       </div>
 

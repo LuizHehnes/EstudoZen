@@ -6,7 +6,9 @@ import {
   Clock, 
   Calendar, 
   Users, 
-  Mic
+  Mic,
+  FileText
+
 } from 'lucide-react';
 
 interface NavItem {
@@ -44,8 +46,13 @@ const navItems: NavItem[] = [
   {
     path: '/voice-notes',
     icon: Mic,
-    label: 'Notas'
-  }
+    label: 'Voz'
+  },
+  {
+    path: '/text-notes',
+    icon: FileText,
+    label: 'Texto'
+  },
 ];
 
 export const BottomNavigation: React.FC = () => {

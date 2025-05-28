@@ -3,16 +3,19 @@ import { StatsDashboard } from '../components/Stats';
 import { useSchedule } from '../context/ScheduleContext';
 import { useContacts } from '../context/ContactsContext';
 import { useVoiceNotes } from '../context/VoiceNotesContext';
-import { Calendar, Users, Mic, CheckCircle, AlertCircle, TrendingUp, Clock } from 'lucide-react';
+import { useTextNotes } from '../context/TextNotesContext';
+import { Calendar, Users, Mic, FileText, AlertCircle, TrendingUp, Clock } from 'lucide-react';
 
 export const DashboardPage: React.FC = () => {
   const { schedules, getUpcomingSchedules } = useSchedule();
   const { contacts } = useContacts();
   const { voiceNotes } = useVoiceNotes();
+  const { textNotes, getFavoriteTextNotes } = useTextNotes();
 
   const upcomingSchedules = getUpcomingSchedules();
   const completedSchedules = schedules.filter(s => s.isCompleted);
   const totalVoiceDuration = voiceNotes.reduce((total, note) => total + note.duration, 0);
+  const favoriteTextNotes = getFavoriteTextNotes();
 
   const formatDuration = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
@@ -49,12 +52,12 @@ export const DashboardPage: React.FC = () => {
       bgColor: 'bg-purple-100 dark:bg-purple-900/30'
     },
     {
-      title: 'Concluídos',
-      value: completedSchedules.length,
-      subtitle: `${Math.round((completedSchedules.length / Math.max(schedules.length, 1)) * 100)}% taxa`,
-      icon: CheckCircle,
-      color: 'from-accent-500 to-accent-600',
-      bgColor: 'bg-accent-100 dark:bg-accent-900/30'
+      title: 'Notas de Texto',
+      value: textNotes.length,
+      subtitle: `${favoriteTextNotes.length} favoritas`,
+      icon: FileText,
+      color: 'from-blue-500 to-blue-600',
+      bgColor: 'bg-blue-100 dark:bg-blue-900/30'
     }
   ];
 
@@ -115,7 +118,7 @@ export const DashboardPage: React.FC = () => {
       </div>
 
       {/* recent activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* próximos agendamentos */}
         <div className="card p-6 space-y-4">
           <div className="flex items-center justify-between">
@@ -208,6 +211,58 @@ export const DashboardPage: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* notas de texto recentes */}
+        <div className="card p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-heading font-semibold text-light-text-primary dark:text-dark-text-primary">
+              Notas de Texto Recentes
+            </h3>
+            <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+              <FileText size={20} className="text-blue-600 dark:text-blue-400" />
+            </div>
+          </div>
+          
+          {textNotes.length === 0 ? (
+            <div className="text-center py-8 space-y-3">
+              <div className="w-16 h-16 mx-auto rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                <FileText size={24} className="text-gray-400" />
+              </div>
+              <p className="text-light-text-muted dark:text-dark-text-muted">
+                Nenhuma nota de texto criada
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {textNotes
+                .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+                .slice(0, 3)
+                .map((note, index) => (
+                <div 
+                  key={note.id} 
+                  className="flex items-center space-x-4 p-4 bg-light-surface dark:bg-dark-surface rounded-xl border border-light-border dark:border-dark-border hover:shadow-soft dark:hover:shadow-dark-soft transition-all duration-200"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <div 
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: note.color }}
+                  ></div>
+                  <div className="flex-1 space-y-1">
+                    <p className="font-medium text-light-text-primary dark:text-dark-text-primary">
+                      {note.title}
+                    </p>
+                    <p className="text-sm text-light-text-muted dark:text-dark-text-muted">
+                      {note.subject}
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-1 text-sm text-light-text-muted dark:text-dark-text-muted">
+                    <span>{note.blocks.length} bloco{note.blocks.length !== 1 ? 's' : ''}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* insights */}
@@ -245,10 +300,26 @@ export const DashboardPage: React.FC = () => {
                 <Mic size={20} className="text-primary-600 dark:text-primary-400 mt-0.5" />
                 <div className="space-y-1">
                   <h4 className="font-medium text-primary-800 dark:text-primary-200">
-                    Organize suas notas
+                    Organize suas notas de voz
                   </h4>
                   <p className="text-sm text-primary-700 dark:text-primary-300">
                     Você tem {voiceNotes.length} notas de voz. Considere organizá-las por tags para facilitar a busca.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {textNotes.length > 10 && favoriteTextNotes.length < 3 && (
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+              <div className="flex items-start space-x-3">
+                <FileText size={20} className="text-blue-600 dark:text-blue-400 mt-0.5" />
+                <div className="space-y-1">
+                  <h4 className="font-medium text-blue-800 dark:text-blue-200">
+                    Marque suas notas importantes
+                  </h4>
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    Você tem {textNotes.length} notas de texto. Marque as mais importantes como favoritas para acesso rápido.
                   </p>
                 </div>
               </div>

@@ -1,8 +1,47 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, BarChart3, Calendar, Users, Mic, BookOpen, Target, TrendingUp } from 'lucide-react';
+import { statsService, type StatsData } from '../services/statsService';
 
 const HomePage: React.FC = () => {
+  const [stats, setStats] = useState<StatsData | null>(null);
+
+  useEffect(() => {
+    const loadStats = async () => {
+      const currentStats = await statsService.getStats();
+      setStats(currentStats);
+    };
+
+    loadStats();
+
+    // Listener para atualizações em tempo real
+    const unsubscribe = statsService.addListener((newStats) => {
+      setStats(newStats);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const formatMinutes = (minutes: number): string => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    
+    if (hours > 0) {
+      return `${hours}h ${mins}min`;
+    }
+    return `${mins}min`;
+  };
+
+  const calculateProductivity = (): string => {
+    if (!stats || stats.studySessions.length === 0) return '0%';
+    
+    const completedSessions = stats.studySessions.filter(s => s.completed).length;
+    const totalSessions = stats.studySessions.length;
+    const productivity = Math.round((completedSessions / totalSessions) * 100);
+    
+    return `${productivity}%`;
+  };
+
   const features = [
     {
       icon: Clock,
@@ -41,11 +80,27 @@ const HomePage: React.FC = () => {
     }
   ];
 
-  const stats = [
-    { label: 'Sessões Concluídas', value: '0', icon: Target },
-    { label: 'Horas Estudadas', value: '0h', icon: Clock },
-    { label: 'Produtividade', value: '0%', icon: TrendingUp },
-    { label: 'Sequência Atual', value: '0 dias', icon: BookOpen }
+  const statsData = [
+    { 
+      label: 'Sessões Concluídas', 
+      value: stats?.sessionsCompleted?.toString() || '0', 
+      icon: Target 
+    },
+    { 
+      label: 'Horas Estudadas', 
+      value: stats ? formatMinutes(stats.totalStudyTime) : '0h', 
+      icon: Clock 
+    },
+    { 
+      label: 'Produtividade', 
+      value: calculateProductivity(), 
+      icon: TrendingUp 
+    },
+    { 
+      label: 'Sequência Atual', 
+      value: stats ? `${stats.studyStreak} ${stats.studyStreak === 1 ? 'dia' : 'dias'}` : '0 dias', 
+      icon: BookOpen 
+    }
   ];
 
   return (
@@ -80,7 +135,7 @@ const HomePage: React.FC = () => {
 
       {/* stats cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {stats.map((stat, index) => {
+        {statsData.map((stat, index) => {
           const Icon = stat.icon;
           return (
             <div

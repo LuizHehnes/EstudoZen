@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import localforage from 'localforage';
+import { useAuth } from './AuthContext';
 
 export interface VoiceNote {
   id: string;
@@ -49,18 +50,28 @@ export const VoiceNotesProvider: React.FC<VoiceNotesProviderProps> = ({ children
   const [currentPlayingId, setCurrentPlayingId] = useState<string | null>(null);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
-    loadVoiceNotes();
-  }, []);
+    if (user) {
+      loadVoiceNotes();
+    } else {
+      setVoiceNotes([]);
+    }
+  }, [user]);
+
+  const getStorageKey = () => `voiceNotes_${user?.id}`;
+  const getAudioKey = (noteId: string) => `audio_${user?.id}_${noteId}`;
 
   const loadVoiceNotes = async () => {
+    if (!user) return;
+    
     try {
-      const savedNotes = await localforage.getItem<VoiceNote[]>('voiceNotes');
+      const savedNotes = await localforage.getItem<VoiceNote[]>(getStorageKey());
       if (savedNotes) {
         const parsedNotes = await Promise.all(
           savedNotes.map(async (note) => {
-            const audioBlob = await localforage.getItem<Blob>(`audio_${note.id}`);
+            const audioBlob = await localforage.getItem<Blob>(getAudioKey(note.id));
             return {
               ...note,
               createdAt: new Date(note.createdAt),
@@ -77,15 +88,17 @@ export const VoiceNotesProvider: React.FC<VoiceNotesProviderProps> = ({ children
   };
 
   const saveVoiceNotes = async (newNotes: VoiceNote[]) => {
+    if (!user) return;
+    
     try {
       // salvar metadados das notas (sem o blob)
       const notesMetadata = newNotes.map(({ audioBlob, audioUrl, ...note }) => note);
-      await localforage.setItem('voiceNotes', notesMetadata);
+      await localforage.setItem(getStorageKey(), notesMetadata);
       
       // salvar blobs separadamente
       await Promise.all(
         newNotes.map(note => 
-          localforage.setItem(`audio_${note.id}`, note.audioBlob)
+          localforage.setItem(getAudioKey(note.id), note.audioBlob)
         )
       );
       
@@ -233,6 +246,8 @@ export const VoiceNotesProvider: React.FC<VoiceNotesProviderProps> = ({ children
   };
 
   const deleteVoiceNote = async (id: string) => {
+    if (!user) return;
+    
     try {
       if (currentPlayingId === id && currentAudio) {
         try {
@@ -247,7 +262,7 @@ export const VoiceNotesProvider: React.FC<VoiceNotesProviderProps> = ({ children
       }
 
       // remover o blob do storage
-      await localforage.removeItem(`audio_${id}`);
+      await localforage.removeItem(getAudioKey(id));
       
       // remover da lista
       const newNotes = voiceNotes.filter(note => note.id !== id);

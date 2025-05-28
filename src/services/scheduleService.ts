@@ -1,7 +1,7 @@
 import localForage from 'localforage';
 import { notificationBlocker } from './notificationBlocker';
 
-// configuração localForage
+// config do localForage
 localForage.config({
   name: 'EstudoZen',
   storeName: 'schedules',
@@ -30,7 +30,7 @@ class ScheduleService {
     this.setupReminderChecks();
   }
 
-  // carrega all itens do IndexedDB
+  // carrega todos os itens do banco local
   private async loadItems(): Promise<void> {
     try {
       const items = await localForage.getItem<ScheduleItem[]>('scheduleItems');
@@ -43,7 +43,7 @@ class ScheduleService {
     }
   }
 
-  // salva itens no IndexedDB
+  // salva os itens no banco local
   private async saveItems(): Promise<void> {
     try {
       await localForage.setItem('scheduleItems', this.cachedItems);
@@ -53,15 +53,15 @@ class ScheduleService {
     }
   }
 
-  // configura lembretes para todos os itens
+  // configura os lembretes p/ todos os itens
   private setupReminders(): void {
-    // limpa todos os intervalos existentes
+    // limpa todos os timers que tavam rolando
     this.scheduledReminders.forEach((timerId) => {
       window.clearTimeout(timerId);
     });
     this.scheduledReminders.clear();
 
-    // configura novos lembretes apenas para itens com reminder ativado
+    // configura lembretes novos só p/ itens que têm reminder ligado
     const now = new Date();
     this.cachedItems.forEach((item) => {
       if (item.reminder && item.reminderTime && !item.isCompleted) {
@@ -79,17 +79,17 @@ class ScheduleService {
     });
   }
 
-  // verifica regularmente por lembretes
+  // fica checando se tem lembretes novos
   private setupReminderChecks(): void {
-    // verifica a cada minuto se há novos lembretes para configurar
+    // checa a cada minuto se tem lembretes novos p/ configurar
     setInterval(() => {
       this.setupReminders();
     }, 60000); // 60 segundos
   }
 
-  // dispara uma notificação de lembrete
+  // manda uma notificação de lembrete
   private triggerReminder(item: ScheduleItem): void {
-    // verifica se as notificações estão permitidas
+    // checa se as notificações tão permitidas
     if (notificationBlocker.permission === 'granted' && !notificationBlocker.isBlocked) {
       const title = `Lembrete: ${item.title}`;
       const options = {
@@ -102,7 +102,7 @@ class ScheduleService {
     }
   }
 
-  // adiciona um novo item de agendamento
+  // adiciona um item novo no cronograma
   async addItem(item: Omit<ScheduleItem, 'id'>): Promise<ScheduleItem> {
     const newItem: ScheduleItem = {
       ...item,
@@ -116,7 +116,7 @@ class ScheduleService {
     return newItem;
   }
 
-  // atualiza um item existente
+  // atualiza um item que já existe
   async updateItem(id: string, updates: Partial<Omit<ScheduleItem, 'id'>>): Promise<ScheduleItem | null> {
     const index = this.cachedItems.findIndex(item => item.id === id);
     
@@ -124,7 +124,7 @@ class ScheduleService {
       return null;
     }
     
-    // remove o lembrete antigo se existir
+    // remove o lembrete antigo se tiver
     if (this.scheduledReminders.has(id)) {
       window.clearTimeout(this.scheduledReminders.get(id));
       this.scheduledReminders.delete(id);
@@ -147,7 +147,7 @@ class ScheduleService {
     const initialLength = this.cachedItems.length;
     this.cachedItems = this.cachedItems.filter(item => item.id !== id);
     
-    // remove o lembrete se existir
+    // remove o lembrete se tiver
     if (this.scheduledReminders.has(id)) {
       window.clearTimeout(this.scheduledReminders.get(id));
       this.scheduledReminders.delete(id);
@@ -162,18 +162,18 @@ class ScheduleService {
     return false;
   }
 
-  // obtem todos os itens
+  // pega todos os itens
   async getItems(): Promise<ScheduleItem[]> {
     return [...this.cachedItems];
   }
 
-  // obtem um item específico pelo ID
+  // pega um item específico pelo ID
   async getItemById(id: string): Promise<ScheduleItem | null> {
     const item = this.cachedItems.find(item => item.id === id);
     return item || null;
   }
 
-  // filtrar itens por data
+  // filtra itens por data
   async getItemsByDate(date: Date): Promise<ScheduleItem[]> {
     const dateString = date.toISOString().split('T')[0];
     
@@ -183,14 +183,14 @@ class ScheduleService {
     });
   }
 
-  // adiciona listener para mudanças
+  // adiciona listener p/ mudanças
   addListener(callback: (items: ScheduleItem[]) => void): () => void {
     this.listeners.push(callback);
     
-    // notifica imediatamente com os itens atuais
+    // avisa imediatamente com os itens atuais
     callback([...this.cachedItems]);
     
-    // retorna função para remover o listener
+    // retorna função p/ remover o listener
     return () => {
       const index = this.listeners.indexOf(callback);
       if (index > -1) {
@@ -199,7 +199,7 @@ class ScheduleService {
     };
   }
 
-  // notifica todos os listeners sobre mudanças
+  // avisa todos os listeners sobre mudanças
   private notifyListeners(): void {
     const items = [...this.cachedItems];
     this.listeners.forEach(callback => callback(items));

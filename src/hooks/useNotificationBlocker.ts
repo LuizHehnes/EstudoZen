@@ -6,7 +6,7 @@ export const useNotificationBlocker = () => {
   const [state, setState] = useState<NotificationState>(notificationBlocker.currentState);
 
   useEffect(() => {
-    // listener mudanças de estado
+    // escuta mudanças de estado
     const unsubscribe = notificationBlocker.addListener(setState);
     
     // Cleanup
