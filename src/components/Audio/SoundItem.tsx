@@ -28,7 +28,7 @@ export function SoundItem({ sound }: SoundItemProps) {
       ${playing ? 'ring-2 ring-blue-500 ring-opacity-20' : ''}
     `}>
       <div className="p-4">
-        {/* Header com ícone e nome */}
+        {/* header ícone e nome */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-3">
             <span className="text-2xl">{sound.icon}</span>

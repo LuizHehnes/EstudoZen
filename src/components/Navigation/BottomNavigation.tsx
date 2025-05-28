@@ -7,8 +7,7 @@ import {
   Calendar, 
   Users, 
   Mic,
-  FileText,
-  VolumeX
+  FileText
 } from 'lucide-react';
 import { StopAllAudioButton } from '../Audio/StopAllAudioButton';
 import { useAudioPlayer } from '../../hooks/useAudioPlayer';

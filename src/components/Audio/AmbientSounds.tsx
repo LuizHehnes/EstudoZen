@@ -1,70 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
-import { Pause, Volume2, VolumeX } from 'lucide-react';
+import { Volume2, VolumeX } from 'lucide-react';
 import { useStudySession } from '../../context/StudySessionContext';
 import { useAudioPlayer } from '../../hooks/useAudioPlayer';
 import { SoundList } from './SoundList';
 import { StopAllAudioButton } from './StopAllAudioButton';
-
-interface AmbientSound {
-  id: string;
-  name: string;
-  url: string;
-  icon: string;
-}
-
-const ambientSounds: AmbientSound[] = [
-  {
-    id: 'rain',
-    name: 'Chuva',
-    url: '/assets/sounds/chuva.mp3',
-    icon: '🌧️'
-  },
-  {
-    id: 'forest',
-    name: 'Floresta',
-    url: '/assets/sounds/floresta.mp3',
-    icon: '🌲'
-  },
-  {
-    id: 'cafe',
-    name: 'Café',
-    url: '/assets/sounds/cafe.mp3',
-    icon: '☕'
-  },
-  {
-    id: 'ocean',
-    name: 'Oceano',
-    url: '/assets/sounds/oceano.mp3',
-    icon: '🌊'
-  },
-  {
-    id: 'fire',
-    name: 'Lareira',
-    url: '/assets/sounds/lareira.mp3',
-    icon: '🔥'
-  },
-  {
-    id: 'library',
-    name: 'Biblioteca/LoFi',
-    url: '/assets/sounds/biblioteca.mp3',
-    icon: '📚'
-  }
-];
 
 interface AmbientSoundsProps {
   className?: string;
 }
 
 export const AmbientSounds: React.FC<AmbientSoundsProps> = ({ className = '' }) => {
-  const { state, setActiveSound, recordActivity } = useStudySession();
+  const { state, setActiveSound } = useStudySession();
   const [volume, setVolume] = useState(0.5);
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>('nature');
-  const { sounds, getAllCategories, getPlayingSoundsCount } = useAudioPlayer();
-
-  // sincroniza com o estado global
-  const currentSound = state.activeSound?.id || null;
+  const { getAllCategories, getPlayingSoundsCount } = useAudioPlayer();
 
   const categories = getAllCategories();
   const hasPlayingSounds = getPlayingSoundsCount() > 0;
@@ -82,104 +33,6 @@ export const AmbientSounds: React.FC<AmbientSoundsProps> = ({ className = '' }) 
       });
     }
   }, [volume, isMuted, state.activeSound, setActiveSound]);
-
-  const playSound = (sound: AmbientSound) => {
-    if (currentSound === sound.id) {
-      // para o som atual
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
-      setActiveSound(null);
-      recordActivity(`Som ${sound.name} parado`);
-    } else {
-      // para o som anterior se tiver
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
-
-      const audio = new Audio();
-      audio.src = sound.url;
-      audio.loop = true;
-      audio.volume = isMuted ? 0 : volume;
-      
-      audio.oncanplaythrough = () => {
-        audio.play().catch((error) => {
-          console.error('Erro ao reproduzir som:', sound.name, error);
-          createSimpleTone(sound.id);
-        });
-      };
-      
-      audio.onerror = (error) => {
-        console.error('Erro ao carregar som:', sound.name, error);
-        createSimpleTone(sound.id);
-      };
-
-      audio.load();
-      
-      audioRef.current = audio;
-      
-      // atualiza o contexto global
-      setActiveSound({
-        id: sound.id,
-        name: sound.name,
-        icon: sound.icon,
-        volume: isMuted ? 0 : volume
-      });
-      
-      recordActivity(`Som ${sound.name} iniciado`);
-    }
-  };
-
-  const createSimpleTone = (soundId: string) => {
-    try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-
-      const frequencies: { [key: string]: number } = {
-        rain: 200,
-        forest: 150,
-        ocean: 100,
-        fire: 80,
-        cafe: 300,
-        library: 250
-      };
-
-      oscillator.frequency.setValueAtTime(frequencies[soundId] || 200, audioContext.currentTime);
-      oscillator.type = 'sine';
-      
-      gainNode.gain.setValueAtTime(isMuted ? 0 : volume * 0.1, audioContext.currentTime);
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      oscillator.start();
-      
-      const stopTone = () => {
-        try {
-          oscillator.stop();
-          audioContext.close();
-        } catch (e) {
-          console.log('Áudio já foi parado');
-        }
-      };
-
-      (audioRef.current as any) = { 
-        pause: stopTone,
-        volume: isMuted ? 0 : volume * 0.1
-      };
-    } catch (error) {
-      console.error('Erro ao criar tom de fallback:', error);
-    }
-  };
-
-  const stopAllSounds = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-    }
-    setActiveSound(null);
-    recordActivity('Todos os sons parados');
-  };
 
   const toggleMute = () => {
     setIsMuted(!isMuted);

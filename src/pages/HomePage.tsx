@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, BarChart3, Calendar, Users, Mic, BookOpen, Target, TrendingUp, Brain, Zap } from 'lucide-react';
+import { Clock, BarChart3, Calendar, Users, Mic, Target, TrendingUp, Brain, Zap } from 'lucide-react';
 
 const HomePage: React.FC = () => {
   const features = [

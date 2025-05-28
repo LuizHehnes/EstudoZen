@@ -48,11 +48,39 @@ const defaultSounds: Sound[] = [
     category: 'nature',
   },
   {
+    id: 'ocean',
+    name: 'Oceano',
+    url: '/assets/sounds/oceano.mp3',
+    icon: '🌊',
+    category: 'nature',
+  },
+  {
+    id: 'fire',
+    name: 'Lareira',
+    url: '/assets/sounds/lareira.mp3',
+    icon: '🔥',
+    category: 'nature',
+  },
+  {
     id: 'coffee-shop',
     name: 'Cafeteria',
     url: '/assets/sounds/cafe.mp3',
     icon: '☕',
     category: 'urban',
+  },
+  {
+    id: 'library',
+    name: 'Biblioteca/LoFi',
+    url: '/assets/sounds/biblioteca.mp3',
+    icon: '📚',
+    category: 'urban',
+  },
+  {
+    id: 'white-noise',
+    name: 'Ruído Branco',
+    url: '/assets/sounds/ruido-branco.mp3',
+    icon: '📻',
+    category: 'white-noise',
   },
 ];
 
@@ -213,7 +241,7 @@ export function AudioProvider({ children }: AudioProviderProps) {
         }
       });
 
-      // Parar elementos de vídeo também, já que podem ter áudio
+      // parar elementos de vídeo também, já que podem ter áudio
       const allVideoElements = document.querySelectorAll('video');
       allVideoElements.forEach((video) => {
         if (!video.paused) {

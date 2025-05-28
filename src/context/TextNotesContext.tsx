@@ -190,6 +190,13 @@ export const TextNotesProvider: React.FC<TextNotesProviderProps> = ({ children }
                 type: 'text',
                 order: 10
               },
+              {
+                id: 'example_1_block_12',
+                content: 'Thainara Tentor Mangile de Barros',
+                style: { color: '#06B6D4' },
+                type: 'text',
+                order: 11
+              },
             ]
           },
         ];

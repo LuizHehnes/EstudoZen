@@ -182,8 +182,22 @@ interface VoiceNote {
 
 ## 🙏 Agradecimentos
 
-* À equipe 5 do projeto da matéria Low Code por sua contribuição
+Agradecemos à nossa equipe, a equipe 5 do projeto da matéria Low Code, por sua contribuição essencial ao desenvolvimento do EstudoZen.
+
+**Membros da Equipe:**
+
+* Lucas Lourenço Dias
+* Nicolas Jodar de Barros
+* Luís Henrique Pereira Siqueira
+* Stephane Flaviana Marques
+* João Gabriel da Silva Ferreira
+* Luisa Mosca de Oliveira
+* Paulo Gabriel Lima
+* Guilherme Carvalho
+* Thainara Tentor Mangile de Barros
 
 ---
 
-**EstudoZen foi desenvolvido com dedicação para tornar seus estudos mais produtivos e organizados.**
+**Missão do EstudoZen:**
+
+O EstudoZen foi criado com o objetivo de tornar seus estudos mais produtivos e organizados, ajudando você a alcançar seus objetivos acadêmicos de forma mais eficiente.
