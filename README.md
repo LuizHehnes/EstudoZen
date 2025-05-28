@@ -1,203 +1,95 @@
-# 🧘 EstudoZen — Plataforma Integrada para Estudos
+# 🧘 EstudoZen
 
-EstudoZen é uma aplicação web moderna desenvolvida para auxiliar estudantes na organização, produtividade e foco, reunindo diversas ferramentas em um único ambiente.
+E aí! Bem-vindo ao **EstudoZen** - uma aplicação web para te ajudar a estudar melhor, se organizar e manter o foco.
 
-## ✨ Funcionalidades Principais
+## 🚀 O que você pode fazer aqui
 
-### 🎯 **Área de Estudo**
+### ⏱️ Área de Estudo
+- **Pomodoro:** Estude por 25 min, descanse por 5 min
+- **Cronômetro:** Controle suas sessões de estudo
+- **Sons Ambiente:** Chuva, cafeteria, floresta e mais
+- **Modo Foco:** Bloqueie distrações
+- **Modo Tela Cheia** Apenas Cronometro
 
-* **Pomodoro Timer**: Técnica de produtividade com ciclos de 25 minutos de foco seguidos por 5 minutos de pausa.
-* **Cronômetro de Sessões**: Controle de tempo para sessões livres, com opções de iniciar, pausar e reiniciar.
-* **Sons Ambiente**: Biblioteca com opções como chuva, floresta, cafeteria, entre outros.
-* **Modo Foco**: Bloqueia notificações para minimizar distrações.
+### 📅 Agenda
+- Crie, edite e organize seus compromissos
+- Receba lembretes personalizados
+- Filtre por data ou matéria
 
-### 📅 **Sistema de Agendamentos**
+### 👥 Contatos
+- Salve contatos de professores e monitores
+- Acesse email e telefone rapidamente
+- Busque por nome, disciplina ou função
 
-* **CRUD Completo**: Permite criar, editar, visualizar e remover agendamentos.
-* **Alertas Personalizáveis**: Notificações programadas entre 5 minutos e 1 dia antes do compromisso.
-* **Filtros Inteligentes**: Visualização por agendamentos futuros, passados ou concluídos.
-* **Organização por Disciplina**: Associe agendamentos às matérias estudadas.
+### 🎤 Notas de Voz
+- Grave ideias e resumos direto no navegador
+- Organize com tags
+- Reproduza quando quiser
 
-### 👥 **Gerenciamento de Contatos**
+### 📝 Notas de Texto
+- Anote suas ideias e pensamentos
+- Organize suas anotações por categorias
+- Acesse suas notas rapidamente
 
-* **Cadastro de Professores e Monitores**: Inclusão de informações como função e disciplinas associadas.
-* **Detalhes de Contato**: Email, telefone e área de atuação.
-* **Busca Avançada**: Pesquisa por nome, email, disciplina ou função.
-* **Ações Diretas**: Botões para chamada ou envio de email.
+## 🚀 Perfil
+- Visualize suas informações pessoais
+- Edite seu perfil com facilidade
+- Acesse suas configurações rapidamente
 
-### 🎤 **Notas de Voz**
+### 📈 Dashboard
+- Veja seus dados de estudo
+- Acompanhe seu progresso
+- Descubra quanto tempo você dedicou a cada matéria
 
-* **Gravação via Navegador**: Utiliza a API MediaRecorder.
-* **Etiquetas Personalizadas**: Organização por tags para facilitar a busca.
-* **Player Integrado**: Reprodução com controles básicos.
-* **Busca por Conteúdo**: Localize notas por título, disciplina ou etiquetas.
 
-### 📊 **Dashboard de Estatísticas**
 
-* **Indicadores em Tempo Real**: Dados sobre agendamentos, contatos e notas.
-* **Recomendações Inteligentes**: Sugestões com base no uso da plataforma.
-* **Histórico de Atividades**: Registro das ações mais recentes.
-* **Taxa de Conclusão**: Acompanhamento do desempenho individual.
+## 🔊 Sons disponíveis
+- 🌧️ Chuva
+- 🌲 Floresta
+- ☕ Cafeteria
+- 🌊 Oceano
+- 🔥 Lareira
+- 📚 Biblioteca/LoFi
 
-### 📱 **Experiência Mobile-First**
+## 💻 Tecnologias
+- React + TypeScript
+- Tailwind CSS
+- LocalForage/IndexedDB
+- APIs Web (MediaRecorder, Notification, Web Audio)
 
-* **Barra de Navegação Inferior**: Otimizada para dispositivos móveis.
-* **Layout Responsivo**: Compatível com telas de diferentes tamanhos.
-* **Gestos e Usabilidade**: Interface intuitiva e moderna.
-
-## 🛠 Tecnologias Utilizadas
-
-### **Frontend**
-
-* **React 19** com **TypeScript**
-* **Tailwind CSS** para estilização
-* **React Router** para navegação
-* **Lucide React** para ícones
-
-### **Gerenciamento de Estado**
-
-* **Context API** para controle global de dados
-* **useReducer** para fluxos complexos
-* **Custom Hooks** para lógica reutilizável
-
-### **Armazenamento**
-
-* **LocalForage** para dados persistentes
-* **IndexedDB** para arquivos de áudio
-* **LocalStorage** para preferências do usuário
-
-### **APIs do Navegador**
-
-* **MediaRecorder API** para gravações
-* **Notification API** para alertas
-* **Web Audio API** para sons ambiente
-
-## 🚀 Como Utilizar
-
-### **Instalação**
+## 🔨 Como usar
 
 ```bash
-# Clone o repositório
-git clone https://github.com/LuizHehnes/EstudoZen
+# Clone o repo
+git clone https://github.com/LuizHehnes/estudozen
 
 # Instale as dependências
 npm install
 
-# Inicie o ambiente de desenvolvimento
+# Rode o projeto
 npm run dev
 ```
 
-### **Navegação pelas Páginas**
+Depois é só acessar http://localhost:5173 e começar a usar!
 
-* `/` — Página inicial
-* `/study` — Ferramentas de foco e cronômetro
-* `/schedule` — Agendamento de tarefas
-* `/dashboard` — Painel com estatísticas
-* `/contacts` — Gerenciamento de contatos
-* `/voice-notes` — Notas de voz gravadas
+## 🔒 Privacidade
+Seus dados ficam só no seu dispositivo. Não enviamos nada pra nenhum servidor externo.
 
-## 🎵 Sons Ambiente Disponíveis
+## ✨ Quem fez isso?
 
-* **🌧️ Chuva**
-* **🌲 Floresta**
-* **☕ Café**
-* **🌊 Oceano**
-* **🔥 Lareira**
-* **📚 Biblioteca/LoFFi**
+O EstudoZen foi desenvolvido pela Equipe 5 do projeto da matéria Low Code:
 
-## 🔧 Configuração de Desenvolvimento
-
-
-
-### **Interfaces de Dados**
-
-#### Agendamentos
-
-```ts
-interface ScheduleItem {
-  id: string
-  title: string
-  description: string
-  date: Date
-  time: string
-  subject: string
-  alertMinutes: number
-  isCompleted: boolean
-  createdAt: Date
-}
-```
-
-#### Contatos
-
-```ts
-interface Contact {
-  id: string
-  name: string
-  email: string
-  phone: string
-  subject: string
-  role: 'professor' | 'monitor' | 'coordenador'
-  notes: string
-  createdAt: Date
-}
-```
-
-#### Notas de Voz
-
-```ts
-interface VoiceNote {
-  id: string
-  title: string
-  subject: string
-  duration: number
-  audioBlob: Blob
-  audioUrl: string
-  createdAt: Date
-  tags: string[]
-}
-```
-
-## 🎨 Sistema de Design
-
-### **Cores**
-
-* Primária: Azul `#3B82F6`
-* Neutra: Cinza `#6B7280`
-* Sucesso: Verde `#10B981`
-* Alerta: Amarelo `#F59E0B`
-* Erro: Vermelho `#EF4444`
-
-### **Fontes**
-
-* Títulos: **Inter Bold**
-* Corpo: **Inter Regular**
-* Códigos: **JetBrains Mono**
-
-## 🔒 Segurança e Privacidade
-
-* **Armazenamento Local**: Todos os dados são mantidos no dispositivo do usuário.
-* **Sem Servidores Externos**: Nenhuma informação é enviada para a nuvem.
-* **Criptografia**: Proteção aplicada a dados sensíveis.
-* **Permissões Conscientes**: Apenas microfone e notificações são solicitados.
-
-## 🙏 Agradecimentos
-
-Agradecemos à nossa equipe, a equipe 5 do projeto da matéria Low Code, por sua contribuição essencial ao desenvolvimento do EstudoZen.
-
-**Membros da Equipe:**
-
-* Lucas Lourenço Dias
-* Nicolas Jodar de Barros
-* Luís Henrique Pereira Siqueira
-* Stephane Flaviana Marques
-* João Gabriel da Silva Ferreira
-* Luisa Mosca de Oliveira
-* Paulo Gabriel Lima
-* Guilherme Carvalho
-* Thainara Tentor Mangile de Barros
+- Luiz Gustavo Hehnes Vieira da Cruz
+- Lucas Lourenço Dias
+- Nicolas Jodar de Barros
+- Luís Henrique Pereira Siqueira
+- Stephane Flaviana Marques
+- João Gabriel da Silva Ferreira
+- Luisa Mosca de Oliveira
+- Paulo Gabriel Lima
+- Guilherme Carvalho
+- Thainara Tentor Mangile de Barros
 
 ---
 
-**Missão do EstudoZen:**
-
-O EstudoZen foi criado com o objetivo de tornar seus estudos mais produtivos e organizados, ajudando você a alcançar seus objetivos acadêmicos de forma mais eficiente.
+**Nossa missão:** Ajudar você a estudar melhor, sem estresse e com mais produtividade. Bons estudos! 📚✨
