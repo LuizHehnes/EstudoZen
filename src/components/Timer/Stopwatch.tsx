@@ -12,12 +12,12 @@ export const Stopwatch: React.FC<StopwatchProps> = ({ onTimeUpdate, className = 
   const { state, startStopwatch, pauseStopwatch, resetStopwatch, recordActivity } = useStudySession();
   const { enterStudyMode } = useStudyMode();
 
-  // Notifica mudanças de tempo para componentes pai
+  // notifica mudanças de tempo p/ componentes pai
   useEffect(() => {
     onTimeUpdate?.(state.stopwatch.time);
   }, [state.stopwatch.time, onTimeUpdate]);
 
-  // Registra atividade quando o cronômetro é usado
+  // registra atividade quando cronômetro é usado
   useEffect(() => {
     if (state.stopwatch.isRunning) {
       recordActivity('Cronômetro iniciado');
@@ -120,7 +120,7 @@ export const Stopwatch: React.FC<StopwatchProps> = ({ onTimeUpdate, className = 
           </div>
         )}
 
-        {/* Indicador de sessão persistente */}
+        {/* indicador de sessão persistente */}
         {(state.stopwatch.isRunning || state.stopwatch.time > 0) && (
           <div className="mt-4 p-3 bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-lg">
             <div className="flex items-center justify-center space-x-2">
@@ -132,7 +132,7 @@ export const Stopwatch: React.FC<StopwatchProps> = ({ onTimeUpdate, className = 
           </div>
         )}
 
-        {/* Dica sobre modo estudo */}
+        {/* dica sobre modo estudo */}
         <div className="mt-4 p-3 bg-accent-50 dark:bg-accent-900/20 border border-accent-200 dark:border-accent-800 rounded-lg">
           <div className="flex items-center justify-center space-x-2">
             <Maximize2 size={16} className="text-accent-600 dark:text-accent-400" />

@@ -1,47 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, BarChart3, Calendar, Users, Mic, BookOpen, Target, TrendingUp } from 'lucide-react';
-import { statsService, type StatsData } from '../services/statsService';
+import { Clock, BarChart3, Calendar, Users, Mic, BookOpen, Target, TrendingUp, Brain, Zap } from 'lucide-react';
 
 const HomePage: React.FC = () => {
-  const [stats, setStats] = useState<StatsData | null>(null);
-
-  useEffect(() => {
-    const loadStats = async () => {
-      const currentStats = await statsService.getStats();
-      setStats(currentStats);
-    };
-
-    loadStats();
-
-    // Listener para atualizações em tempo real
-    const unsubscribe = statsService.addListener((newStats) => {
-      setStats(newStats);
-    });
-
-    return unsubscribe;
-  }, []);
-
-  const formatMinutes = (minutes: number): string => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    
-    if (hours > 0) {
-      return `${hours}h ${mins}min`;
-    }
-    return `${mins}min`;
-  };
-
-  const calculateProductivity = (): string => {
-    if (!stats || stats.studySessions.length === 0) return '0%';
-    
-    const completedSessions = stats.studySessions.filter(s => s.completed).length;
-    const totalSessions = stats.studySessions.length;
-    const productivity = Math.round((completedSessions / totalSessions) * 100);
-    
-    return `${productivity}%`;
-  };
-
   const features = [
     {
       icon: Clock,
@@ -80,26 +41,26 @@ const HomePage: React.FC = () => {
     }
   ];
 
-  const statsData = [
-    { 
-      label: 'Sessões Concluídas', 
-      value: stats?.sessionsCompleted?.toString() || '0', 
-      icon: Target 
+  const objectives = [
+    {
+      icon: Brain,
+      title: 'Maximizar o Foco',
+      description: 'Elimine distrações e concentre-se no que realmente importa através de técnicas comprovadas de produtividade.'
     },
-    { 
-      label: 'Horas Estudadas', 
-      value: stats ? formatMinutes(stats.totalStudyTime) : '0h', 
-      icon: Clock 
+    {
+      icon: Target,
+      title: 'Organizar o Tempo',
+      description: 'Transforme o caos acadêmico em um sistema organizado e eficiente de gestão de estudos.'
     },
-    { 
-      label: 'Produtividade', 
-      value: calculateProductivity(), 
-      icon: TrendingUp 
+    {
+      icon: TrendingUp,
+      title: 'Acompanhar Progresso',
+      description: 'Monitore seu desenvolvimento e identifique áreas de melhoria através de dados e estatísticas.'
     },
-    { 
-      label: 'Sequência Atual', 
-      value: stats ? `${stats.studyStreak} ${stats.studyStreak === 1 ? 'dia' : 'dias'}` : '0 dias', 
-      icon: BookOpen 
+    {
+      icon: Zap,
+      title: 'Aumentar Produtividade',
+      description: 'Aprenda mais em menos tempo com métodos científicos e ferramentas especializadas.'
     }
   ];
 
@@ -112,8 +73,8 @@ const HomePage: React.FC = () => {
             EstudoZen
           </h1>
           <p className="text-xl md:text-2xl text-light-text-secondary dark:text-dark-text-secondary max-w-3xl mx-auto leading-relaxed">
-            Transforme seus estudos com foco, organização e produtividade. 
-            Sua jornada acadêmica começa aqui.
+            Sua plataforma completa para estudos eficientes e organizados. 
+            Transforme sua forma de aprender com foco, produtividade e zen.
           </p>
         </div>
         
@@ -133,30 +94,62 @@ const HomePage: React.FC = () => {
         </div>
       </div>
 
-      {/* stats cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {statsData.map((stat, index) => {
-          const Icon = stat.icon;
-          return (
-            <div
-              key={stat.label}
-              className="card card-hover p-6 text-center space-y-3"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <div className="w-12 h-12 mx-auto rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
-                <Icon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-light-text-primary dark:text-dark-text-primary">
-                  {stat.value}
+      {/* objetivo do projeto */}
+      <div className="card p-8 space-y-6 bg-gradient-to-br from-primary-50 to-accent-50 dark:from-primary-900/20 dark:to-accent-900/20 border-primary-200 dark:border-primary-800">
+        <div className="text-center space-y-4">
+          <h2 className="text-3xl font-heading font-bold text-light-text-primary dark:text-dark-text-primary">
+            O Que é o EstudoZen?
+          </h2>
+          <p className="text-lg text-light-text-secondary dark:text-dark-text-secondary max-w-4xl mx-auto leading-relaxed">
+            O EstudoZen é uma plataforma inovadora desenvolvida para revolucionar a forma como você estuda. 
+            Nosso objetivo é combinar técnicas científicas de produtividade, como a Técnica Pomodoro, 
+            com ferramentas modernas de organização e acompanhamento de progresso.
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {objectives.map((objective, index) => {
+            const Icon = objective.icon;
+            return (
+              <div
+                key={objective.title}
+                className="text-center space-y-4 p-4"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <div className="w-16 h-16 mx-auto rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center shadow-medium">
+                  <Icon className="w-8 h-8 text-white" />
                 </div>
-                <div className="text-sm text-light-text-muted dark:text-dark-text-muted">
-                  {stat.label}
+                <div className="space-y-2">
+                  <h3 className="text-xl font-heading font-semibold text-light-text-primary dark:text-dark-text-primary">
+                    {objective.title}
+                  </h3>
+                  <p className="text-light-text-secondary dark:text-dark-text-secondary text-sm leading-relaxed">
+                    {objective.description}
+                  </p>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+      </div>
+
+      {/* missão */}
+      <div className="card p-8 space-y-6">
+        <div className="text-center space-y-4">
+          <h2 className="text-3xl font-heading font-bold text-light-text-primary dark:text-dark-text-primary">
+            Nossa Missão
+          </h2>
+          <div className="max-w-4xl mx-auto space-y-4 text-light-text-secondary dark:text-dark-text-secondary">
+            <p className="text-lg leading-relaxed">
+              Acreditamos que todo estudante merece ter acesso às melhores ferramentas para potencializar seu aprendizado. 
+              Por isso, criamos o EstudoZen: uma solução completa que une produtividade, organização e bem-estar.
+            </p>
+            <p className="text-lg leading-relaxed">
+              Nossa plataforma não é apenas sobre estudar mais, mas sobre estudar melhor. Queremos ajudar você a 
+              desenvolver hábitos saudáveis de estudo, manter o foco e alcançar seus objetivos acadêmicos com menos estresse e mais eficiência.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* features grid */}
@@ -206,13 +199,14 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* call to action */}
-      <div className="card p-8 text-center space-y-6 bg-gradient-to-br from-primary-50 to-accent-50 dark:from-primary-900/20 dark:to-accent-900/20 border-primary-200 dark:border-primary-800">
+      <div className="card p-8 text-center space-y-6 bg-gradient-to-br from-accent-50 to-primary-50 dark:from-accent-900/20 dark:to-primary-900/20 border-accent-200 dark:border-accent-800">
         <div className="space-y-4">
           <h2 className="text-2xl md:text-3xl font-heading font-bold text-light-text-primary dark:text-dark-text-primary">
-            Pronto para transformar seus estudos?
+            Comece Sua Jornada de Estudos Zen
           </h2>
           <p className="text-light-text-secondary dark:text-dark-text-secondary max-w-2xl mx-auto">
-            Junte-se a milhares de estudantes que já descobriram o poder do foco e da organização.
+            Junte-se a uma nova era de estudos inteligentes. Experimente a diferença de estudar com foco, 
+            organização e as melhores práticas de produtividade.
           </p>
         </div>
         
@@ -228,4 +222,4 @@ const HomePage: React.FC = () => {
   );
 };
 
-export default HomePage; 
+export default HomePage;

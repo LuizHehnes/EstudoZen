@@ -28,9 +28,9 @@ interface TextNoteCardProps {
 }
 
 const priorityColors = {
-  low: 'bg-gray-100 text-gray-600',
-  medium: 'bg-blue-100 text-blue-600',
-  high: 'bg-red-100 text-red-600'
+  low: 'bg-success-100 dark:bg-success-900/30 text-success-600 dark:text-success-400',
+  medium: 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400',
+  high: 'bg-error-100 dark:bg-error-900/30 text-error-600 dark:text-error-400'
 };
 
 const priorityLabels = {
@@ -64,7 +64,7 @@ export const TextNoteCard: React.FC<TextNoteCardProps> = ({
         style.underline ? 'underline' : '',
         style.strikethrough ? 'line-through' : ''
       ].filter(Boolean).join(' ') || 'none',
-      color: style.color || '#000000',
+      color: style.color || 'currentColor',
       backgroundColor: style.backgroundColor || 'transparent',
       fontSize: style.fontSize ? `${style.fontSize}px` : '14px',
       fontFamily: style.fontFamily || 'inherit'
@@ -78,27 +78,27 @@ export const TextNoteCard: React.FC<TextNoteCardProps> = ({
     switch (block.type) {
       case 'heading':
         return (
-          <h3 key={block.id} style={styles} className="font-semibold mb-2">
+          <h3 key={block.id} style={styles} className="font-semibold mb-2 text-light-text-primary dark:text-dark-text-primary">
             {block.content}
           </h3>
         );
       case 'bullet':
         return (
           <div key={block.id} className="flex items-start mb-1">
-            <span className="mr-2 mt-1.5 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></span>
-            <span style={styles}>{block.content}</span>
+            <span className="mr-2 mt-1.5 w-1.5 h-1.5 bg-light-text-muted dark:bg-dark-text-muted rounded-full flex-shrink-0"></span>
+            <span style={styles} className="text-light-text-secondary dark:text-dark-text-secondary">{block.content}</span>
           </div>
         );
       case 'number':
         return (
           <div key={block.id} className="flex items-start mb-1">
-            <span className="mr-2 text-gray-600 min-w-[20px]">{block.order + 1}.</span>
-            <span style={styles}>{block.content}</span>
+            <span className="mr-2 text-light-text-muted dark:text-dark-text-muted min-w-[20px]">{block.order + 1}.</span>
+            <span style={styles} className="text-light-text-secondary dark:text-dark-text-secondary">{block.content}</span>
           </div>
         );
       default:
         return (
-          <p key={block.id} style={styles} className="mb-2">
+          <p key={block.id} style={styles} className="mb-2 text-light-text-secondary dark:text-dark-text-secondary">
             {block.content}
           </p>
         );
@@ -128,12 +128,12 @@ export const TextNoteCard: React.FC<TextNoteCardProps> = ({
   if (compact) {
     return (
       <div
-        className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer"
+        className="bg-light-card dark:bg-dark-card rounded-lg border border-light-border dark:border-dark-border p-4 hover:shadow-soft dark:hover:shadow-dark-soft transition-shadow cursor-pointer animate-fade-in"
         onClick={handleEdit}
         style={{ borderLeftColor: note.color, borderLeftWidth: '4px' }}
       >
         <div className="flex items-start justify-between mb-2">
-          <h3 className="font-semibold text-gray-800 truncate flex-1 mr-2">
+          <h3 className="font-semibold text-light-text-primary dark:text-dark-text-primary truncate flex-1 mr-2">
             {note.title}
           </h3>
           {note.isFavorite && (
@@ -141,11 +141,11 @@ export const TextNoteCard: React.FC<TextNoteCardProps> = ({
           )}
         </div>
         
-        <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+        <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary mb-2 line-clamp-2">
           {getPreviewText()}
         </p>
         
-        <div className="flex items-center justify-between text-xs text-gray-500">
+        <div className="flex items-center justify-between text-xs text-light-text-muted dark:text-dark-text-muted">
           <div className="flex items-center space-x-3">
             <div className="flex items-center space-x-1">
               <BookOpen size={12} />
@@ -167,15 +167,15 @@ export const TextNoteCard: React.FC<TextNoteCardProps> = ({
 
   return (
     <div 
-      className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+      className="bg-light-card dark:bg-dark-card rounded-lg border border-light-border dark:border-dark-border shadow-soft dark:shadow-dark-soft hover:shadow-medium dark:hover:shadow-dark-medium transition-shadow animate-fade-in"
       style={{ borderLeftColor: note.color, borderLeftWidth: '4px' }}
     >
       {/* Header */}
-      <div className="p-4 border-b border-gray-100">
+      <div className="p-4 border-b border-light-border dark:border-dark-border">
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center space-x-2 mb-1">
-              <h3 className="text-lg font-semibold text-gray-800">
+              <h3 className="text-lg font-semibold text-light-text-primary dark:text-dark-text-primary">
                 {note.title}
               </h3>
               {note.isFavorite && (
@@ -186,7 +186,7 @@ export const TextNoteCard: React.FC<TextNoteCardProps> = ({
               </div>
             </div>
             
-            <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+            <div className="flex flex-wrap gap-4 text-sm text-light-text-muted dark:text-dark-text-muted">
               <div className="flex items-center space-x-1">
                 <BookOpen size={14} />
                 <span>{note.subject}</span>
@@ -214,19 +214,19 @@ export const TextNoteCard: React.FC<TextNoteCardProps> = ({
           <div className="relative">
             <button
               onClick={() => setShowMenu(!showMenu)}
-              className="p-1 hover:bg-gray-100 rounded transition-colors"
+              className="p-1 hover:bg-light-surface dark:hover:bg-dark-surface rounded transition-colors"
             >
-              <MoreVertical size={20} className="text-gray-500" />
+              <MoreVertical size={20} className="text-light-text-muted dark:text-dark-text-muted" />
             </button>
             
             {showMenu && (
-              <div className="absolute right-0 top-full mt-1 w-48 bg-white border rounded-lg shadow-lg z-10">
+              <div className="absolute right-0 top-full mt-1 w-48 bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border rounded-lg shadow-medium dark:shadow-dark-medium z-10">
                 <button
                   onClick={() => {
                     handleEdit();
                     setShowMenu(false);
                   }}
-                  className="flex items-center space-x-2 w-full px-3 py-2 text-left hover:bg-gray-50"
+                  className="flex items-center space-x-2 w-full px-3 py-2 text-left hover:bg-light-surface dark:hover:bg-dark-surface text-light-text-primary dark:text-dark-text-primary"
                 >
                   <Edit size={16} />
                   <span>Editar</span>
@@ -237,7 +237,7 @@ export const TextNoteCard: React.FC<TextNoteCardProps> = ({
                     onToggleFavorite(note.id);
                     setShowMenu(false);
                   }}
-                  className="flex items-center space-x-2 w-full px-3 py-2 text-left hover:bg-gray-50"
+                  className="flex items-center space-x-2 w-full px-3 py-2 text-left hover:bg-light-surface dark:hover:bg-dark-surface text-light-text-primary dark:text-dark-text-primary"
                 >
                   {note.isFavorite ? <StarOff size={16} /> : <Star size={16} />}
                   <span>{note.isFavorite ? 'Remover favorito' : 'Adicionar favorito'}</span>
@@ -248,7 +248,7 @@ export const TextNoteCard: React.FC<TextNoteCardProps> = ({
                     onDuplicate(note.id);
                     setShowMenu(false);
                   }}
-                  className="flex items-center space-x-2 w-full px-3 py-2 text-left hover:bg-gray-50"
+                  className="flex items-center space-x-2 w-full px-3 py-2 text-left hover:bg-light-surface dark:hover:bg-dark-surface text-light-text-primary dark:text-dark-text-primary"
                 >
                   <Copy size={16} />
                   <span>Duplicar</span>
@@ -257,46 +257,42 @@ export const TextNoteCard: React.FC<TextNoteCardProps> = ({
                 <div className="relative">
                   <button
                     onClick={() => setShowExportMenu(!showExportMenu)}
-                    className="flex items-center space-x-2 w-full px-3 py-2 text-left hover:bg-gray-50"
+                    className="flex items-center space-x-2 w-full px-3 py-2 text-left hover:bg-light-surface dark:hover:bg-dark-surface text-light-text-primary dark:text-dark-text-primary"
                   >
                     <Download size={16} />
                     <span>Exportar</span>
                   </button>
                   
                   {showExportMenu && (
-                    <div className="absolute left-full top-0 ml-1 w-32 bg-white border rounded-lg shadow-lg">
+                    <div className="absolute left-full top-0 w-36 bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border rounded-lg shadow-medium dark:shadow-dark-medium">
                       <button
                         onClick={() => handleExport('txt')}
-                        className="block w-full px-3 py-2 text-left hover:bg-gray-50 text-sm"
+                        className="flex items-center space-x-2 w-full px-3 py-2 text-left hover:bg-light-surface dark:hover:bg-dark-surface text-light-text-primary dark:text-dark-text-primary"
                       >
-                        Texto (.txt)
-                      </button>
-                      <button
-                        onClick={() => handleExport('md')}
-                        className="block w-full px-3 py-2 text-left hover:bg-gray-50 text-sm"
-                      >
-                        Markdown (.md)
+                        <span>Texto (.txt)</span>
                       </button>
                       <button
                         onClick={() => handleExport('html')}
-                        className="block w-full px-3 py-2 text-left hover:bg-gray-50 text-sm"
+                        className="flex items-center space-x-2 w-full px-3 py-2 text-left hover:bg-light-surface dark:hover:bg-dark-surface text-light-text-primary dark:text-dark-text-primary"
                       >
-                        HTML (.html)
+                        <span>HTML (.html)</span>
+                      </button>
+                      <button
+                        onClick={() => handleExport('md')}
+                        className="flex items-center space-x-2 w-full px-3 py-2 text-left hover:bg-light-surface dark:hover:bg-dark-surface text-light-text-primary dark:text-dark-text-primary"
+                      >
+                        <span>Markdown (.md)</span>
                       </button>
                     </div>
                   )}
                 </div>
                 
-                <hr className="my-1" />
-                
                 <button
                   onClick={() => {
-                    if (window.confirm('Tem certeza que deseja excluir esta nota?')) {
-                      onDelete(note.id);
-                    }
+                    onDelete(note.id);
                     setShowMenu(false);
                   }}
-                  className="flex items-center space-x-2 w-full px-3 py-2 text-left hover:bg-red-50 text-red-600"
+                  className="flex items-center space-x-2 w-full px-3 py-2 text-left hover:bg-error-100 dark:hover:bg-error-900/20 text-error-600 dark:text-error-400"
                 >
                   <Trash2 size={16} />
                   <span>Excluir</span>
@@ -305,59 +301,52 @@ export const TextNoteCard: React.FC<TextNoteCardProps> = ({
             )}
           </div>
         </div>
-        
-        {/* Tags */}
+      </div>
+
+      {/* Content */}
+      <div className="p-4">
         {note.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
+          <div className="flex flex-wrap gap-2 mb-4">
             {note.tags.map((tag, index) => (
-              <span
+              <div
                 key={index}
-                className="inline-flex items-center space-x-1 px-2 py-1 bg-primary-100 text-primary-700 rounded-full text-xs"
+                className="flex items-center space-x-1 px-2 py-1 bg-light-surface dark:bg-dark-surface rounded-full text-xs text-light-text-muted dark:text-dark-text-muted"
               >
                 <Tag size={12} />
                 <span>{tag}</span>
-              </span>
+              </div>
             ))}
           </div>
         )}
-      </div>
-      
-      {/* Content */}
-      <div className="p-4">
-        {note.blocks.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <FileText size={48} className="mx-auto mb-2 opacity-50" />
-            <p>Esta nota ainda não possui conteúdo</p>
+        
+        <div className="space-y-2">
+          {note.blocks.slice(0, 3).map(renderBlock)}
+          
+          {note.blocks.length > 3 && (
             <button
               onClick={handleEdit}
-              className="mt-2 text-primary-600 hover:text-primary-700 text-sm underline"
+              className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
             >
-              Clique para adicionar conteúdo
+              Ver mais...
             </button>
-          </div>
-        ) : (
-          <div className="space-y-2 max-h-64 overflow-y-auto">
-            {note.blocks
-              .sort((a, b) => a.order - b.order)
-              .map(block => renderBlock(block))
-            }
-          </div>
-        )}
+          )}
+          
+          {note.blocks.length === 0 && (
+            <p className="text-light-text-muted dark:text-dark-text-muted italic text-sm">
+              Sem conteúdo. Clique em editar para adicionar conteúdo.
+            </p>
+          )}
+        </div>
       </div>
       
       {/* Footer */}
-      <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 rounded-b-lg">
-        <div className="flex items-center justify-between text-xs text-gray-500">
-          <div>
-            Criada em {formatDate(note.createdAt)}
-          </div>
-          <button
-            onClick={handleEdit}
-            className="text-primary-600 hover:text-primary-700 font-medium"
-          >
-            Editar nota
-          </button>
-        </div>
+      <div className="flex items-center justify-end p-3 border-t border-light-border dark:border-dark-border">
+        <button
+          onClick={handleEdit}
+          className="px-3 py-1.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50"
+        >
+          Editar nota
+        </button>
       </div>
     </div>
   );

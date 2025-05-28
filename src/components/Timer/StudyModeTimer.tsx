@@ -15,12 +15,12 @@ export const StudyModeTimer: React.FC = () => {
     return null;
   }
 
-  // Detecta qual tipo de timer usar baseado na página atual e estado
+  // detecta qual tipo de timer usar baseado na página atual e estado
   const isOnStudyPage = location.pathname === '/study';
   const hasStopwatchActivity = sessionState.stopwatch.time > 0 || sessionState.stopwatch.isRunning;
   const hasPomodoroActivity = timerState.isRunning || timerState.totalSeconds !== 1500; // 1500 = 25min padrão
 
-  // Prioriza cronômetro se estiver na página de estudo ou se houver atividade no cronômetro
+  // prioriza cronometro se estiver na página de estudo ou se houver atividade no cronômetro
   const useStopwatch = isOnStudyPage ? hasStopwatchActivity || !hasPomodoroActivity : hasStopwatchActivity;
 
   const formatTime = (seconds: number) => {
@@ -85,25 +85,25 @@ export const StudyModeTimer: React.FC = () => {
         <X size={24} />
       </button>
 
-      {/* Indicador ESC */}
+      {/* indicador ESC */}
       <div className="absolute top-8 left-8 text-white/60 text-sm">
         Pressione <kbd className="px-2 py-1 bg-white/10 rounded">ESC</kbd> para sair
       </div>
 
-      {/* Timer principal */}
+      {/* timer principal */}
       <div className="text-center">
-        {/* Título */}
+        {/* título */}
         <h1 className="text-2xl md:text-3xl font-light text-white/80 mb-8">
           {timerType}
         </h1>
 
-        {/* Display do tempo */}
+        {/* display do tempo */}
         <div className="mb-12">
           <div className="text-8xl md:text-9xl lg:text-[12rem] font-mono font-light text-white leading-none tracking-wider">
             {displayTime}
           </div>
           
-          {/* Status */}
+          {/* status */}
           <div className="mt-6 text-xl md:text-2xl text-white/60">
             {isRunning ? (
               <div className="flex items-center justify-center space-x-2">
@@ -116,9 +116,9 @@ export const StudyModeTimer: React.FC = () => {
           </div>
         </div>
 
-        {/* Controles */}
+        {/* controles */}
         <div className="flex items-center justify-center space-x-8">
-          {/* Play/Pause */}
+          {/* play/pause */}
           <button
             onClick={handleToggle}
             className={`p-6 rounded-full transition-all duration-200 transform hover:scale-105 ${

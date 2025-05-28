@@ -18,7 +18,7 @@ export function ResetButton() {
       aria-label="Reiniciar timer"
       title="Reiniciar timer"
     >
-      {/* ícone de reset */}
+      {/* ícone reset */}
       <svg 
         className="w-5 h-5 text-gray-600 dark:text-gray-300" 
         fill="none" 

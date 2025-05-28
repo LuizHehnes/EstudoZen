@@ -10,7 +10,13 @@ import {
   StarOff,
   Tag,
   FileText,
-  AlertCircle
+  AlertCircle,
+  Type,
+  ListOrdered,
+  List,
+  Heading,
+  BookOpen,
+  Edit
 } from 'lucide-react';
 import { useTextNotes } from '../context/TextNotesContext';
 import type { TextNote, TextBlock } from '../context/TextNotesContext';
@@ -163,7 +169,7 @@ export const TextNoteEditorPage: React.FC = () => {
         style.underline ? 'underline' : '',
         style.strikethrough ? 'line-through' : ''
       ].filter(Boolean).join(' ') || 'none',
-      color: style.color || '#000000',
+      color: style.color || 'currentColor',
       backgroundColor: style.backgroundColor || 'transparent',
       fontSize: style.fontSize ? `${style.fontSize}px` : '14px',
       fontFamily: style.fontFamily || 'inherit'
@@ -177,143 +183,181 @@ export const TextNoteEditorPage: React.FC = () => {
     switch (block.type) {
       case 'heading':
         return (
-          <h2 key={block.id} style={styles} className="text-xl font-semibold mb-3">
+          <h2 key={block.id} style={styles} className="text-xl font-semibold mb-3 text-light-text-primary dark:text-dark-text-primary">
             {block.content}
           </h2>
         );
       case 'bullet':
         return (
           <div key={block.id} className="flex items-start mb-2">
-            <span className="mr-3 mt-1.5 w-2 h-2 bg-gray-400 rounded-full flex-shrink-0"></span>
-            <span style={styles}>{block.content}</span>
+            <span className="mr-3 mt-1.5 w-2 h-2 bg-light-text-muted dark:bg-dark-text-muted rounded-full flex-shrink-0"></span>
+            <span style={styles} className="text-light-text-secondary dark:text-dark-text-secondary">{block.content}</span>
           </div>
         );
       case 'number':
         return (
           <div key={block.id} className="flex items-start mb-2">
-            <span className="mr-3 text-gray-600 min-w-[24px] font-medium">{block.order + 1}.</span>
-            <span style={styles}>{block.content}</span>
+            <span className="mr-3 text-light-text-muted dark:text-dark-text-muted min-w-[24px] font-medium">{block.order + 1}.</span>
+            <span style={styles} className="text-light-text-secondary dark:text-dark-text-secondary">{block.content}</span>
           </div>
         );
       default:
         return (
-          <p key={block.id} style={styles} className="mb-3 leading-relaxed">
+          <p key={block.id} style={styles} className="mb-3 leading-relaxed text-light-text-secondary dark:text-dark-text-secondary">
             {block.content}
           </p>
         );
     }
   };
 
+  const priorityColors = {
+    low: 'bg-success-100 dark:bg-success-900/30 text-success-600 dark:text-success-400',
+    medium: 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400',
+    high: 'bg-error-100 dark:bg-error-900/30 text-error-600 dark:text-error-400'
+  };
+
+  const priorityLabels = {
+    low: 'Baixa',
+    medium: 'Média',
+    high: 'Alta'
+  };
+
   if (!note) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <FileText size={48} className="mx-auto text-light-text-muted dark:text-dark-text-muted mb-4" />
-          <p className="text-light-text-muted dark:text-dark-text-muted">Carregando nota...</p>
-        </div>
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600 dark:border-primary-400"></div>
       </div>
     );
   }
 
-  const sortedBlocks = [...note.blocks].sort((a, b) => a.order - b.order);
-
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="container mx-auto pb-20 animate-fade-in">
       {/* Header */}
-      <div className="bg-light-card dark:bg-dark-card rounded-xl shadow-soft dark:shadow-dark-soft border border-light-border dark:border-dark-border p-6">
-        <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+        <div className="flex items-center space-x-3">
           <button
             onClick={() => navigate('/text-notes')}
-            className="flex items-center space-x-2 text-light-text-muted dark:text-dark-text-muted hover:text-light-text-primary dark:hover:text-dark-text-primary transition-colors"
+            className="p-2 rounded-lg hover:bg-light-surface dark:hover:bg-dark-surface text-light-text-muted dark:text-dark-text-muted transition-colors"
           >
             <ArrowLeft size={20} />
-            <span>Voltar às Notas</span>
           </button>
-
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={() => setIsPreviewMode(!isPreviewMode)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                isPreviewMode
-                  ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'
-                  : 'border border-light-border dark:border-dark-border hover:bg-light-surface dark:hover:bg-dark-surface'
-              }`}
+          
+          {editingMetadata ? (
+            <input
+              type="text"
+              value={metadataForm.title}
+              onChange={(e) => {
+                setMetadataForm(prev => ({ ...prev, title: e.target.value }));
+                setHasUnsavedChanges(true);
+              }}
+              className="text-2xl font-semibold bg-transparent border-b-2 border-primary-500 dark:border-primary-400 focus:outline-none text-light-text-primary dark:text-dark-text-primary"
+              placeholder="Título da nota"
+              autoFocus
+            />
+          ) : (
+            <h1 
+              className="text-2xl font-semibold text-light-text-primary dark:text-dark-text-primary" 
+              onClick={() => setEditingMetadata(true)}
             >
-              {isPreviewMode ? <EyeOff size={20} /> : <Eye size={20} />}
-              <span>{isPreviewMode ? 'Editar' : 'Visualizar'}</span>
-            </button>
-
-            <button
-              onClick={() => toggleFavorite(note.id)}
-              className={`p-2 rounded-lg transition-colors ${
-                note.isFavorite
-                  ? 'text-yellow-500 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/30'
-                  : 'text-light-text-muted dark:text-dark-text-muted hover:bg-light-surface dark:hover:bg-dark-surface'
-              }`}
-              title={note.isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
-            >
-              {note.isFavorite ? <Star size={20} className="fill-current" /> : <StarOff size={20} />}
-            </button>
-
-            <button
-              onClick={handleSave}
-              disabled={isSaving || !hasUnsavedChanges}
-              className="flex items-center space-x-2 bg-primary-600 hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-700 disabled:bg-light-text-muted dark:disabled:bg-dark-text-muted text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              <Save size={20} />
-              <span>{isSaving ? 'Salvando...' : 'Salvar'}</span>
-            </button>
+              {note.title}
+            </h1>
+          )}
+          
+          <div className={`px-2 py-1 rounded-full text-xs ${priorityColors[note.priority]}`}>
+            {priorityLabels[note.priority]}
           </div>
         </div>
+        
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => toggleFavorite(note.id)}
+            className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg transition-colors ${
+              note.isFavorite
+                ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400'
+                : 'bg-light-surface dark:bg-dark-surface text-light-text-muted dark:text-dark-text-muted'
+            }`}
+            title={note.isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+          >
+            {note.isFavorite ? <StarOff size={16} /> : <Star size={16} />}
+            <span className="text-sm">{note.isFavorite ? 'Desfavoritar' : 'Favoritar'}</span>
+          </button>
+          
+          <button
+            onClick={() => setIsPreviewMode(!isPreviewMode)}
+            className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg transition-colors ${
+              isPreviewMode
+                ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'
+                : 'bg-light-surface dark:bg-dark-surface text-light-text-muted dark:text-dark-text-muted'
+            }`}
+            title={isPreviewMode ? 'Modo de edição' : 'Modo de visualização'}
+          >
+            {isPreviewMode ? <Edit size={16} /> : <Eye size={16} />}
+            <span className="text-sm">{isPreviewMode ? 'Editar' : 'Visualizar'}</span>
+          </button>
+          
+          <button
+            onClick={handleSave}
+            disabled={isSaving || !hasUnsavedChanges}
+            className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-primary-600 dark:bg-primary-500 text-white transition-colors ${
+              isSaving || !hasUnsavedChanges
+                ? 'opacity-50 cursor-not-allowed'
+                : 'hover:bg-primary-700 dark:hover:bg-primary-600'
+            }`}
+          >
+            <Save size={16} />
+            <span className="text-sm">{isSaving ? 'Salvando...' : 'Salvar'}</span>
+          </button>
+        </div>
+      </div>
 
-        {/* Metadados */}
-        {editingMetadata ? (
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Metadados */}
+      {editingMetadata ? (
+        <div className="card mb-6">
+          <div className="p-4 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-1">
-                  Título
-                </label>
-                <input
-                  type="text"
-                  value={metadataForm.title}
-                  onChange={(e) => setMetadataForm(prev => ({ ...prev, title: e.target.value }))}
-                  className="w-full px-3 py-2 border border-light-border dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-light-surface dark:bg-dark-surface text-light-text-primary dark:text-dark-text-primary"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-1">
-                  Disciplina
+                <label className="block text-sm font-medium text-light-text-muted dark:text-dark-text-muted mb-1">
+                  Matéria
                 </label>
                 <input
                   type="text"
                   value={metadataForm.subject}
-                  onChange={(e) => setMetadataForm(prev => ({ ...prev, subject: e.target.value }))}
-                  className="w-full px-3 py-2 border border-light-border dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-light-surface dark:bg-dark-surface text-light-text-primary dark:text-dark-text-primary"
+                  onChange={(e) => {
+                    setMetadataForm(prev => ({ ...prev, subject: e.target.value }));
+                    setHasUnsavedChanges(true);
+                  }}
+                  className="w-full p-2 rounded-lg border border-light-border dark:border-dark-border bg-light-surface dark:bg-dark-surface text-light-text-primary dark:text-dark-text-primary"
+                  placeholder="Ex: Matemática, História, etc."
                 />
               </div>
-
+              
               <div>
-                <label className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-1">
+                <label className="block text-sm font-medium text-light-text-muted dark:text-dark-text-muted mb-1">
                   Categoria
                 </label>
                 <input
                   type="text"
                   value={metadataForm.category}
-                  onChange={(e) => setMetadataForm(prev => ({ ...prev, category: e.target.value }))}
-                  className="w-full px-3 py-2 border border-light-border dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-light-surface dark:bg-dark-surface text-light-text-primary dark:text-dark-text-primary"
+                  onChange={(e) => {
+                    setMetadataForm(prev => ({ ...prev, category: e.target.value }));
+                    setHasUnsavedChanges(true);
+                  }}
+                  className="w-full p-2 rounded-lg border border-light-border dark:border-dark-border bg-light-surface dark:bg-dark-surface text-light-text-primary dark:text-dark-text-primary"
+                  placeholder="Ex: Resumo, Trabalho, Projeto, etc."
                 />
               </div>
-
+              
               <div>
-                <label className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-1">
+                <label className="block text-sm font-medium text-light-text-muted dark:text-dark-text-muted mb-1">
                   Prioridade
                 </label>
                 <select
                   value={metadataForm.priority}
-                  onChange={(e) => setMetadataForm(prev => ({ ...prev, priority: e.target.value as any }))}
-                  className="w-full px-3 py-2 border border-light-border dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-light-surface dark:bg-dark-surface text-light-text-primary dark:text-dark-text-primary"
+                  onChange={(e) => {
+                    setMetadataForm(prev => ({ ...prev, priority: e.target.value as any }));
+                    setHasUnsavedChanges(true);
+                  }}
+                  className="w-full p-2 rounded-lg border border-light-border dark:border-dark-border bg-light-surface dark:bg-dark-surface text-light-text-primary dark:text-dark-text-primary"
                 >
                   <option value="low">Baixa</option>
                   <option value="medium">Média</option>
@@ -321,185 +365,179 @@ export const TextNoteEditorPage: React.FC = () => {
                 </select>
               </div>
             </div>
-
+            
             <div>
-              <label className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-1">
+              <label className="block text-sm font-medium text-light-text-muted dark:text-dark-text-muted mb-1">
                 Tags (separadas por vírgula)
               </label>
               <input
                 type="text"
                 value={metadataForm.tags}
-                onChange={(e) => setMetadataForm(prev => ({ ...prev, tags: e.target.value }))}
-                className="w-full px-3 py-2 border border-light-border dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-light-surface dark:bg-dark-surface text-light-text-primary dark:text-dark-text-primary"
+                onChange={(e) => {
+                  setMetadataForm(prev => ({ ...prev, tags: e.target.value }));
+                  setHasUnsavedChanges(true);
+                }}
+                className="w-full p-2 rounded-lg border border-light-border dark:border-dark-border bg-light-surface dark:bg-dark-surface text-light-text-primary dark:text-dark-text-primary"
+                placeholder="Ex: importante, revisão, prova, etc."
               />
             </div>
-
+            
             <div>
-              <label className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-1">
-                Cor da Nota
+              <label className="block text-sm font-medium text-light-text-muted dark:text-dark-text-muted mb-1">
+                Cor da nota
               </label>
-              <div className="flex space-x-2">
-                {['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899'].map(color => (
+              <div className="flex gap-2">
+                {['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#6B7280'].map(color => (
                   <button
                     key={color}
-                    type="button"
-                    onClick={() => setMetadataForm(prev => ({ ...prev, color }))}
-                    className={`w-8 h-8 rounded-full border-2 transition-all ${
-                      metadataForm.color === color ? 'border-light-text-primary dark:border-dark-text-primary scale-110' : 'border-light-border dark:border-dark-border'
+                    onClick={() => {
+                      setMetadataForm(prev => ({ ...prev, color }));
+                      setHasUnsavedChanges(true);
+                    }}
+                    className={`w-8 h-8 rounded-full transition-transform ${
+                      metadataForm.color === color 
+                        ? 'ring-2 ring-offset-2 ring-primary-600 dark:ring-primary-400 scale-110' 
+                        : 'hover:scale-110'
                     }`}
                     style={{ backgroundColor: color }}
-                  />
+                  ></button>
                 ))}
               </div>
             </div>
-
-            <div className="flex space-x-3">
+            
+            <div className="flex justify-end pt-2">
               <button
-                type="button"
                 onClick={() => setEditingMetadata(false)}
-                className="px-4 py-2 border border-light-border dark:border-dark-border text-light-text-secondary dark:text-dark-text-secondary rounded-lg hover:bg-light-surface dark:hover:bg-dark-surface transition-colors"
+                className="px-4 py-2 bg-primary-600 dark:bg-primary-500 hover:bg-primary-700 dark:hover:bg-primary-600 text-white rounded-lg text-sm"
               >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setEditingMetadata(false);
-                  setHasUnsavedChanges(true);
-                }}
-                className="px-4 py-2 bg-primary-600 hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-700 text-white rounded-lg transition-colors"
-              >
-                Salvar Metadados
+                Concluir edição
               </button>
             </div>
           </div>
-        ) : (
-          <div>
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex-1">
-                <h1 className="text-2xl font-bold text-light-text-primary dark:text-dark-text-primary mb-2">{note.title}</h1>
-                <div className="flex flex-wrap gap-4 text-sm text-light-text-muted dark:text-dark-text-muted">
-                  <span>{note.subject}</span>
-                  <span>•</span>
-                  <span>{note.category}</span>
-                  <span>•</span>
-                  <span>Atualizada {format(note.updatedAt, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</span>
-                </div>
-              </div>
-              <button
-                onClick={() => setEditingMetadata(true)}
-                className="flex items-center space-x-1 text-light-text-muted dark:text-dark-text-muted hover:text-light-text-primary dark:hover:text-dark-text-primary transition-colors"
-              >
-                <Tag size={16} />
-                <span>Editar</span>
-              </button>
+        </div>
+      ) : (
+        <div className="card mb-6 p-4 cursor-pointer hover:shadow-medium dark:hover:shadow-dark-medium transition-shadow" onClick={() => setEditingMetadata(true)}>
+          <div className="flex flex-wrap gap-4 text-sm text-light-text-muted dark:text-dark-text-muted">
+            <div className="flex items-center space-x-1">
+              <FileText size={14} />
+              <span className="font-medium text-light-text-secondary dark:text-dark-text-secondary">{note.category || 'Sem categoria'}</span>
             </div>
-
-            {note.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {note.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center space-x-1 px-2 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-xs"
-                  >
-                    <Tag size={10} />
-                    <span>{tag}</span>
-                  </span>
-                ))}
+            
+            <div className="flex items-center space-x-1">
+              <BookOpen size={14} />
+              <span className="font-medium text-light-text-secondary dark:text-dark-text-secondary">{note.subject || 'Sem matéria'}</span>
+            </div>
+          </div>
+          
+          {note.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {note.tags.map((tag, index) => (
+                <div
+                  key={index}
+                  className="flex items-center space-x-1 px-2 py-1 bg-light-surface dark:bg-dark-surface rounded-full text-xs text-light-text-muted dark:text-dark-text-muted"
+                >
+                  <Tag size={12} />
+                  <span>{tag}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      
+      {/* Conteúdo */}
+      <div className="card mb-6 p-4">
+        {isPreviewMode ? (
+          <div className="prose prose-sm dark:prose-invert max-w-none">
+            {note.blocks.length === 0 ? (
+              <div className="text-center py-12">
+                <FileText size={48} className="mx-auto mb-4 text-light-text-muted dark:text-dark-text-muted opacity-40" />
+                <p className="text-light-text-muted dark:text-dark-text-muted">Esta nota ainda não possui conteúdo</p>
+                <button
+                  onClick={() => setIsPreviewMode(false)}
+                  className="mt-4 px-4 py-2 bg-primary-600 dark:bg-primary-500 hover:bg-primary-700 dark:hover:bg-primary-600 text-white rounded-lg text-sm"
+                >
+                  Adicionar conteúdo
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {note.blocks
+                  .sort((a, b) => a.order - b.order)
+                  .map(renderPreviewBlock)
+                }
               </div>
             )}
           </div>
-        )}
-
-        {hasUnsavedChanges && (
-          <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg flex items-center space-x-2">
-            <AlertCircle size={16} className="text-yellow-600 dark:text-yellow-400" />
-            <span className="text-sm text-yellow-800 dark:text-yellow-200">Você tem alterações não salvas</span>
-          </div>
-        )}
-      </div>
-
-      {/* Conteúdo */}
-      <div className="bg-light-card dark:bg-dark-card rounded-xl shadow-soft dark:shadow-dark-soft border border-light-border dark:border-dark-border">
-        {isPreviewMode ? (
-          <div className="p-8">
-            <div className="prose max-w-none">
-              {sortedBlocks.length === 0 ? (
-                <div className="text-center py-12 text-light-text-muted dark:text-dark-text-muted">
-                  <FileText size={48} className="mx-auto mb-4 opacity-50" />
-                  <p>Esta nota ainda não possui conteúdo</p>
-                  <button
-                    onClick={() => setIsPreviewMode(false)}
-                    className="mt-4 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 underline"
-                  >
-                    Adicionar conteúdo
-                  </button>
-                </div>
-              ) : (
-                sortedBlocks.map(block => renderPreviewBlock(block))
-              )}
-            </div>
-          </div>
         ) : (
-          <div className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-light-text-primary dark:text-dark-text-primary">Conteúdo da Nota</h2>
-              
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => handleAddBlock('text')}
-                  className="flex items-center space-x-1 px-3 py-2 text-sm bg-primary-600 hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-700 text-white rounded-lg transition-colors"
-                >
-                  <Plus size={16} />
-                  <span>Texto</span>
-                </button>
-                <button
-                  onClick={() => handleAddBlock('heading')}
-                  className="flex items-center space-x-1 px-3 py-2 text-sm border border-light-border dark:border-dark-border hover:bg-light-surface dark:hover:bg-dark-surface rounded-lg transition-colors"
-                >
-                  <Plus size={16} />
-                  <span>Título</span>
-                </button>
-                <button
-                  onClick={() => handleAddBlock('bullet')}
-                  className="flex items-center space-x-1 px-3 py-2 text-sm border border-light-border dark:border-dark-border hover:bg-light-surface dark:hover:bg-dark-surface rounded-lg transition-colors"
-                >
-                  <Plus size={16} />
-                  <span>Lista</span>
-                </button>
+          <div className="space-y-4">
+            {note.blocks.length === 0 ? (
+              <div className="text-center py-6">
+                <p className="text-light-text-muted dark:text-dark-text-muted mb-4">Adicione blocos para começar a criar sua nota</p>
               </div>
-            </div>
-
-            <div className="space-y-4">
-              {sortedBlocks.length === 0 ? (
-                <div className="text-center py-12 bg-light-surface dark:bg-dark-surface rounded-lg border border-light-border dark:border-dark-border">
-                  <FileText size={48} className="mx-auto text-light-text-muted dark:text-dark-text-muted mb-4" />
-                  <h3 className="text-lg font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">Nota vazia</h3>
-                  <p className="text-light-text-muted dark:text-dark-text-muted mb-4">Adicione seu primeiro bloco de conteúdo</p>
-                  <button
-                    onClick={() => handleAddBlock('text')}
-                    className="inline-flex items-center space-x-2 bg-primary-600 hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition-colors"
-                  >
-                    <Plus size={20} />
-                    <span>Adicionar Bloco</span>
-                  </button>
-                </div>
-              ) : (
-                sortedBlocks.map((block, index) => (
-                  <div key={block.id} className="relative group">
+            ) : (
+              <div className="space-y-4">
+                {note.blocks
+                  .sort((a, b) => a.order - b.order)
+                  .map(block => (
                     <RichTextEditor
+                      key={block.id}
                       block={block}
                       onUpdate={(updates) => handleUpdateBlock(block.id, updates)}
                       onDelete={() => handleDeleteBlock(block.id)}
                       onSave={handleBlockSave}
-                      autoFocus={index === sortedBlocks.length - 1 && !block.content}
                     />
-                  </div>
-                ))
-              )}
+                  ))
+                }
+              </div>
+            )}
+            
+            {/* Adicionar blocos */}
+            <div className="flex flex-wrap gap-2 pt-4 border-t border-light-border dark:border-dark-border">
+              <button
+                onClick={() => handleAddBlock('text')}
+                className="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-light-surface dark:bg-dark-surface hover:bg-light-border dark:hover:bg-dark-border text-light-text-secondary dark:text-dark-text-secondary transition-colors"
+              >
+                <Type size={16} />
+                <span className="text-sm">Texto</span>
+              </button>
+              
+              <button
+                onClick={() => handleAddBlock('heading')}
+                className="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-light-surface dark:bg-dark-surface hover:bg-light-border dark:hover:bg-dark-border text-light-text-secondary dark:text-dark-text-secondary transition-colors"
+              >
+                <Heading size={16} />
+                <span className="text-sm">Título</span>
+              </button>
+              
+              <button
+                onClick={() => handleAddBlock('bullet')}
+                className="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-light-surface dark:bg-dark-surface hover:bg-light-border dark:hover:bg-dark-border text-light-text-secondary dark:text-dark-text-secondary transition-colors"
+              >
+                <List size={16} />
+                <span className="text-sm">Lista</span>
+              </button>
+              
+              <button
+                onClick={() => handleAddBlock('number')}
+                className="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-light-surface dark:bg-dark-surface hover:bg-light-border dark:hover:bg-dark-border text-light-text-secondary dark:text-dark-text-secondary transition-colors"
+              >
+                <ListOrdered size={16} />
+                <span className="text-sm">Lista Numerada</span>
+              </button>
             </div>
           </div>
         )}
+      </div>
+      
+      {/* Informações da Nota */}
+      <div className="flex flex-wrap justify-between items-center text-xs text-light-text-muted dark:text-dark-text-muted">
+        <div>
+          Criada em {format(note.createdAt, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+        </div>
+        <div>
+          Última atualização: {format(note.updatedAt, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+        </div>
       </div>
     </div>
   );

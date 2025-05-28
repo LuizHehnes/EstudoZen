@@ -99,48 +99,97 @@ export const TextNotesProvider: React.FC<TextNotesProviderProps> = ({ children }
         }));
         setTextNotes(parsedNotes);
       } else {
-        // Criar notas de exemplo se não houver notas salvas
+        //nota de exemplo
         const exampleNotes: TextNote[] = [
           {
             id: 'example_1',
-            title: 'Resumo de Física - Mecânica',
-            subject: 'Física',
-            category: 'Resumo',
+            title: 'Porjeto Grupo 5 - USC',
+            subject: 'Low Code',
+            category: 'Projeto',
             priority: 'high',
-            tags: ['mecânica', 'força', 'movimento'],
+            tags: ['low code', 'usc', 'grupo 5'],
             color: '#3B82F6',
             isFavorite: true,
-            createdAt: new Date(Date.now() - 86400000), // 1 dia atrás
-            updatedAt: new Date(Date.now() - 3600000), // 1 hora atrás
+            createdAt: new Date(Date.now() - 86400000),
+            updatedAt: new Date(Date.now() - 3600000),
             blocks: [
               {
                 id: 'example_1_block_1',
-                content: 'Leis de Newton',
+                content: 'Projeto Grupo 5 - USC',
                 style: { bold: true, fontSize: 18 },
                 type: 'heading',
                 order: 0
               },
               {
                 id: 'example_1_block_2',
-                content: 'Primeira Lei (Inércia): Um corpo em repouso tende a permanecer em repouso, e um corpo em movimento tende a permanecer em movimento, a menos que uma força externa atue sobre ele.',
+                content: 'Projeto Desenvolvido por: ',
                 style: {},
                 type: 'text',
                 order: 1
               },
               {
                 id: 'example_1_block_3',
-                content: 'Segunda Lei (F = ma): A força resultante sobre um objeto é igual ao produto de sua massa pela aceleração.',
+                content: 'Luiz Gustavo Hehnes Vieira da Cruz',
                 style: { color: '#EF4444' },
                 type: 'text',
                 order: 2
               },
               {
                 id: 'example_1_block_4',
-                content: 'Terceira Lei (Ação e Reação): Para toda ação há uma reação igual e oposta.',
-                style: { italic: true },
+                content: 'Lucas Lourenço Dias',
+                style: { color: '#3B82F6' },
                 type: 'text',
                 order: 3
-              }
+              },
+              {
+                id: 'example_1_block_5',
+                content: 'Nicolas Jodar de Barros',
+                style: { color: '#10B981' },
+                type: 'text',
+                order: 4
+              },
+              {
+                id: 'example_1_block_6',
+                content: 'Luís Henrique Pereira Siqueira',
+                style: { color: '#8B5CF6' },
+                type: 'text',
+                order: 5
+              },
+              {
+                id: 'example_1_block_7',
+                content: 'Stephane Flaviana Marques',
+                style: { color: '#F59E0B' },
+                type: 'text',
+                order: 6
+              },
+              {
+                id: 'example_1_block_8',
+                content: 'João Gabriel da Silva Ferreira',
+                style: { color: '#EC4899' },
+                type: 'text',
+                order: 7
+              },
+              {
+                id: 'example_1_block_9',
+                content: 'Luisa Mosca de Oliveira',
+                style: { color: '#06B6D4' },
+                type: 'text',
+                order: 8
+              },
+              {
+                id: 'example_1_block_10',
+                content: 'Paulo Gabriel Lima',
+                style: { color: '#F97316' },
+                type: 'text',
+                order: 9
+              },
+              {
+                id: 'example_1_block_11',
+                content: 'Guilherme Carvalho',
+                style: { color: '#84CC16' },
+                type: 'text',
+                order: 10
+              },
             ]
           },
         ];

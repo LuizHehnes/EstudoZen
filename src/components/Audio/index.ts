@@ -1,3 +1,5 @@
-export { SoundList } from './SoundList';
-export { SoundItem } from './SoundItem';
-export { PersistentAudioControl } from './PersistentAudioControl'; 
+export * from './AmbientSounds';
+export * from './PersistentAudioControl';
+export * from './SoundList';
+export * from './SoundItem';
+export * from './StopAllAudioButton'; 

@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { Pause, Volume2, VolumeX } from 'lucide-react';
 import { useStudySession } from '../../context/StudySessionContext';
+import { useAudioPlayer } from '../../hooks/useAudioPlayer';
+import { SoundList } from './SoundList';
+import { StopAllAudioButton } from './StopAllAudioButton';
 
 interface AmbientSound {
   id: string;
@@ -31,19 +34,19 @@ const ambientSounds: AmbientSound[] = [
   {
     id: 'ocean',
     name: 'Oceano',
-    url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT',
+    url: '/assets/sounds/oceano.mp3',
     icon: '🌊'
   },
   {
     id: 'fire',
     name: 'Lareira',
-    url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT',
+    url: '/assets/sounds/lareira.mp3',
     icon: '🔥'
   },
   {
     id: 'library',
-    name: 'Biblioteca',
-    url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT',
+    name: 'Biblioteca/LoFi',
+    url: '/assets/sounds/biblioteca.mp3',
     icon: '📚'
   }
 ];
@@ -57,9 +60,14 @@ export const AmbientSounds: React.FC<AmbientSoundsProps> = ({ className = '' }) 
   const [volume, setVolume] = useState(0.5);
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string | null>('nature');
+  const { sounds, getAllCategories, getPlayingSoundsCount } = useAudioPlayer();
 
   // sincroniza com o estado global
   const currentSound = state.activeSound?.id || null;
+
+  const categories = getAllCategories();
+  const hasPlayingSounds = getPlayingSoundsCount() > 0;
 
   useEffect(() => {
     if (audioRef.current) {
@@ -214,60 +222,78 @@ export const AmbientSounds: React.FC<AmbientSoundsProps> = ({ className = '' }) 
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        {ambientSounds.map((sound) => (
-          <button
-            key={sound.id}
-            onClick={() => playSound(sound)}
-            className={`p-4 rounded-lg border-2 transition-all duration-200 ${
-              currentSound === sound.id
-                ? 'border-primary-500 dark:border-primary-400 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                : 'border-light-border dark:border-dark-border hover:border-primary-300 dark:hover:border-primary-600 hover:bg-primary-25 dark:hover:bg-primary-900/20'
-            }`}
-          >
-            <div className="text-2xl mb-2">{sound.icon}</div>
-            <div className="text-sm font-medium text-light-text-primary dark:text-dark-text-primary">{sound.name}</div>
-            {currentSound === sound.id && (
-              <div className="flex items-center justify-center mt-2">
-                <Pause size={16} className="text-primary-600 dark:text-primary-400" />
+        {categories.map((category) => {
+          let categoryName = '';
+          let categoryIcon = '';
+
+          switch (category) {
+            case 'nature':
+              categoryName = 'Natureza';
+              categoryIcon = '🌿';
+              break;
+            case 'urban':
+              categoryName = 'Urbano';
+              categoryIcon = '🏙️';
+              break;
+            case 'white-noise':
+              categoryName = 'Ruído Branco';
+              categoryIcon = '📻';
+              break;
+            case 'instrumental':
+              categoryName = 'Instrumental';
+              categoryIcon = '🎵';
+              break;
+            default:
+              categoryName = category;
+              categoryIcon = '🔊';
+          }
+
+          return (
+            <button
+              key={category}
+              onClick={() => setActiveCategory(category)}
+              className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                activeCategory === category
+                  ? 'border-primary-500 dark:border-primary-400 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                  : 'border-light-border dark:border-dark-border hover:border-primary-300 dark:hover:border-primary-600 hover:bg-primary-25 dark:hover:bg-primary-900/20'
+              }`}
+            >
+              <div className="text-2xl mb-2">{categoryIcon}</div>
+              <div className="text-sm font-medium text-light-text-primary dark:text-dark-text-primary">{categoryName}</div>
+            </button>
+          );
+        })}
+      </div>
+
+      {activeCategory && (
+        <SoundList category={activeCategory} />
+      )}
+
+      {hasPlayingSounds && (
+        <div className="mt-6 p-4 rounded-lg bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800/50">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="p-1.5 rounded-lg bg-primary-100 dark:bg-primary-800/50">
+                <Volume2 className="w-4 h-4 text-primary-600 dark:text-primary-400" />
               </div>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {currentSound && (
-        <div className="mt-4 flex items-center justify-between p-3 bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-800 rounded-lg">
-          <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></div>
-            <span className="text-sm text-primary-700 dark:text-primary-300">
-              Tocando: {ambientSounds.find(s => s.id === currentSound)?.name}
-            </span>
-          </div>
-          <button
-            onClick={stopAllSounds}
-            className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-200 font-medium"
-          >
-            Parar
-          </button>
-        </div>
-      )}
-
-      {/* Indicador de persistência */}
-      {state.activeSound && (
-        <div className="mt-4 p-3 bg-success-50 dark:bg-success-900/20 border border-success-200 dark:border-success-800 rounded-lg">
-          <div className="flex items-center justify-center space-x-2">
-            <div className="w-2 h-2 bg-success-500 rounded-full animate-pulse"></div>
-            <span className="text-sm text-success-700 dark:text-success-300 font-medium">
-              Som será mantido ao navegar entre páginas
-            </span>
+              <div>
+                <span className="text-sm font-medium text-primary-700 dark:text-primary-300">
+                  {getPlayingSoundsCount()} {getPlayingSoundsCount() === 1 ? 'som ativo' : 'sons ativos'}
+                </span>
+                <p className="text-xs text-primary-600/80 dark:text-primary-400/80">
+                  Combine diferentes sons para criar seu ambiente perfeito
+                </p>
+              </div>
+            </div>
+            
+            <StopAllAudioButton 
+              variant="primary"
+              size="sm"
+              showText={false}
+            />
           </div>
         </div>
       )}
-
-      <div className="mt-4 text-xs text-light-text-muted dark:text-dark-text-muted">
-        <p>💡 Dica: Os sons de Chuva, Floresta e Café estão disponíveis em alta qualidade.</p>
-        <p>Os demais sons usam tons sintéticos para demonstração.</p>
-      </div>
     </div>
   );
 }; 

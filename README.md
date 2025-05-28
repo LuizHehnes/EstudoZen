@@ -78,7 +78,7 @@ EstudoZen é uma aplicação web moderna desenvolvida para auxiliar estudantes n
 
 ```bash
 # Clone o repositório
-git clone [url-do-repositorio]
+git clone https://github.com/LuizHehnes/EstudoZen
 
 # Instale as dependências
 npm install
@@ -96,21 +96,6 @@ npm run dev
 * `/contacts` — Gerenciamento de contatos
 * `/voice-notes` — Notas de voz gravadas
 
-## 📁 Estrutura do Projeto
-
-```
-src/
-├── components/           # Componentes reutilizáveis
-│   ├── Audio/            # Sons ambiente
-│   ├── Focus/            # Modo foco
-│   ├── Navigation/       # Navegação
-│   ├── Stats/            # Estatísticas
-│   └── Timer/            # Cronômetro/Pomodoro
-├── context/              # Gerenciadores de estado
-├── pages/                # Telas da aplicação
-├── services/             # Integrações e utilidades
-```
-
 ## 🎵 Sons Ambiente Disponíveis
 
 * **🌧️ Chuva**
@@ -118,29 +103,11 @@ src/
 * **☕ Café**
 * **🌊 Oceano**
 * **🔥 Lareira**
-* **📚 Biblioteca**
-
-*Alguns sons são reproduções reais e outros são sintetizados para melhor desempenho.*
-
-## 📱 Recursos para Dispositivos Móveis
-
-* **Navegação via abas fixas**
-* **Compatibilidade com gestos**
-* **Interface responsiva**
-* **Desempenho otimizado**
+* **📚 Biblioteca/LoFFi**
 
 ## 🔧 Configuração de Desenvolvimento
 
-### **Scripts Disponíveis**
 
-```bash
-npm run dev          # Ambiente de desenvolvimento
-npm run build        # Compilação para produção
-npm run preview      # Visualização da build
-npm run lint         # Verificação de boas práticas
-npm run lint:fix     # Correção automática de erros
-npm run format       # Formatação do código
-```
 
 ### **Interfaces de Dados**
 
@@ -213,27 +180,9 @@ interface VoiceNote {
 * **Criptografia**: Proteção aplicada a dados sensíveis.
 * **Permissões Conscientes**: Apenas microfone e notificações são solicitados.
 
-## 🤝 Contribuindo com o Projeto
-
-1. Faça um *fork* do repositório.
-2. Crie uma nova branch:
-   `git checkout -b feature/NomeDaFuncionalidade`
-3. Realize seus commits:
-   `git commit -m 'Adiciona nova funcionalidade'`
-4. Faça o *push* da sua branch:
-   `git push origin feature/NomeDaFuncionalidade`
-5. Abra um Pull Request.
-
-## 📄 Licença
-
-Este projeto está licenciado sob a **MIT License**. Para mais informações, consulte o arquivo `LICENSE`.
-
 ## 🙏 Agradecimentos
 
-* À equipe do **React** por sua excelente biblioteca
-* Ao **Tailwind CSS** pelo sistema de design eficiente
-* À **Lucide** pela coleção de ícones
-* E à **comunidade open source**, por tornar este projeto possível
+* À equipe 5 do projeto da matéria Low Code por sua contribuição
 
 ---
 

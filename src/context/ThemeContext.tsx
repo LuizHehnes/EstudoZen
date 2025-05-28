@@ -24,7 +24,7 @@ interface ThemeProviderProps {
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [theme, setThemeState] = useState<'light' | 'dark' | 'system'>(() => {
     const savedTheme = localStorage.getItem('estudozen-theme');
-    return (savedTheme as 'light' | 'dark' | 'system') || 'dark'; // Padrão escuro
+    return (savedTheme as 'light' | 'dark' | 'system') || 'light'; // Padrão claro
   });
 
   const [isDark, setIsDark] = useState(false);

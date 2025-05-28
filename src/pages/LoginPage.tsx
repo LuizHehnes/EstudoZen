@@ -162,7 +162,7 @@ export const LoginPage: React.FC = () => {
           </form>
         </div>
 
-        {/* Demonstração */}
+        {/* demo login */}
         <div className="bg-accent-50 dark:bg-accent-900/20 border border-accent-200 dark:border-accent-800 rounded-lg p-4">
           <div className="flex">
             <svg className="h-5 w-5 text-accent-400" viewBox="0 0 20 20" fill="currentColor">
@@ -173,8 +173,8 @@ export const LoginPage: React.FC = () => {
                 Demonstração
               </h3>
               <div className="mt-2 text-sm text-accent-700 dark:text-accent-300">
-                <p>Email: demo@estudozen.com</p>
-                <p>Senha: demo123</p>
+                <p>Email: grupo5@estudozen.com</p>
+                <p>Senha: 123456</p>
               </div>
             </div>
           </div>

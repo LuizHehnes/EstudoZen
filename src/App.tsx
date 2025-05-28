@@ -17,7 +17,7 @@ import { StudyModeTimer } from './components/Timer';
 import { useState } from 'react';
 
 const AppContent = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const handleLogout = async () => {
@@ -43,8 +43,26 @@ const AppContent = () => {
             </div>
             
             <div className="flex items-center space-x-6">
-              {/* Informações do usuário */}
-              {user && (
+              {/* botões de login/registro para não autenticados */}
+              {!isAuthenticated && (
+                <div className="flex items-center space-x-4">
+                  <Link
+                    to="/login"
+                    className="text-light-text-primary dark:text-dark-text-primary hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 text-sm font-medium"
+                  >
+                    Entrar
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="btn-primary text-sm px-4 py-2 rounded-lg"
+                  >
+                    Cadastrar
+                  </Link>
+                </div>
+              )}
+
+              {/* info do usuário */}
+              {isAuthenticated && user && (
                 <div className="relative">
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
@@ -95,10 +113,10 @@ const AppContent = () => {
         <Outlet />
       </main>
 
-      {user && <BottomNavigation />}
-      {user && <PersistentIndicator />}
-      {user && <PersistentAudioControl />}
-      {user && <StudyModeTimer />}
+      {isAuthenticated && <BottomNavigation />}
+      {isAuthenticated && <PersistentIndicator />}
+      {isAuthenticated && <PersistentAudioControl />}
+      {isAuthenticated && <StudyModeTimer />}
     </div>
   );
 };

@@ -87,7 +87,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const createDemoUserIfNotExists = async () => {
     try {
       const users = await localforage.getItem<Record<string, any>>('users') || {};
-      const demoUserExists = Object.values(users).some((userData: any) => userData.email === 'demo@estudozen.com');
+      const demoUserExists = Object.values(users).some((userData: any) => userData.email === 'grupo5@estudozen.com');
       
       if (!demoUserExists) {
         const demoUserId = 'demo_user_123';
@@ -96,7 +96,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const demoUser: User = {
           id: demoUserId,
           name: 'Usuário Demonstração',
-          email: 'demo@estudozen.com',
+          email: 'grupo5@estudozen.com',
           createdAt: now,
           lastLogin: now,
           preferences: {
@@ -108,7 +108,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         const demoUserWithPassword = {
           ...demoUser,
-          passwordHash: hashPassword('demo123')
+          passwordHash: hashPassword('123456')
         };
 
         await localforage.setItem(`user_${demoUserId}`, demoUser);

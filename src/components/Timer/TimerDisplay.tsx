@@ -38,7 +38,7 @@ export function TimerDisplay() {
           />
         </svg>
         
-        {/* display do tempo no centro */}
+          {/* display tempo no centro */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
             <div className="flex items-center justify-center space-x-2">

@@ -7,9 +7,11 @@ import {
   Calendar, 
   Users, 
   Mic,
-  FileText
-
+  FileText,
+  VolumeX
 } from 'lucide-react';
+import { StopAllAudioButton } from '../Audio/StopAllAudioButton';
+import { useAudioPlayer } from '../../hooks/useAudioPlayer';
 
 interface NavItem {
   path: string;
@@ -57,6 +59,7 @@ const navItems: NavItem[] = [
 
 export const BottomNavigation: React.FC = () => {
   const location = useLocation();
+  const { isAnyAudioPlayingInPage } = useAudioPlayer();
 
   const isActive = (path: string) => {
     if (path === '/') {
@@ -101,6 +104,17 @@ export const BottomNavigation: React.FC = () => {
               </Link>
             );
           })}
+
+          {/* Botão de parar todos os áudios - aparece apenas quando há áudios tocando */}
+          <div className="flex flex-col items-center justify-center space-y-1 px-3 py-2">
+            <StopAllAudioButton
+              size="sm"
+              variant="ghost"
+              showText={true}
+              buttonText="Parar"
+              className={`rounded-full ${!isAnyAudioPlayingInPage() ? 'hidden' : ''}`}
+            />
+          </div>
         </div>
       </div>
     </nav>

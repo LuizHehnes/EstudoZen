@@ -8,12 +8,12 @@ export function LockButton() {
   );
 
   useEffect(() => {
-    // registra listener para mudanças no estado de notificações
+    // registra listener p/ mudanças de notificações
     const unsubscribe = notificationBlocker.addListener((state) => {
       setNotificationState(state);
     });
 
-    // solicita permissão ao montar o componente
+    // solicita permissão ao montar componente
     if (notificationState.permission === 'default') {
       notificationBlocker.requestPermission();
     }

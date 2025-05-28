@@ -194,6 +194,7 @@ export function AudioProvider({ children }: AudioProviderProps) {
   };
 
   const stopAllSounds = () => {
+    // Parar todos os áudios gerenciados pelo contexto
     Object.keys(audioStates).forEach((soundId) => {
       const audioState = audioStates[soundId];
       if (audioState?.audio) {
@@ -201,6 +202,36 @@ export function AudioProvider({ children }: AudioProviderProps) {
         audioState.audio.currentTime = 0;
       }
     });
+    
+    // Também parar elementos de áudio HTML nativos que possam existir na página
+    try {
+      const allAudioElements = document.querySelectorAll('audio');
+      allAudioElements.forEach((audio) => {
+        if (!audio.paused) {
+          audio.pause();
+          audio.currentTime = 0;
+        }
+      });
+
+      // Parar elementos de vídeo também, já que podem ter áudio
+      const allVideoElements = document.querySelectorAll('video');
+      allVideoElements.forEach((video) => {
+        if (!video.paused) {
+          video.pause();
+          video.currentTime = 0;
+        }
+      });
+      
+      // Notificar outros componentes da parada global
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('estudozen:stop-all-audio'));
+      }
+      
+      console.log('Todos os áudios foram interrompidos');
+    } catch (error) {
+      console.error('Erro ao interromper áudios da página:', error);
+    }
+    
     dispatch({ type: 'STOP_ALL' });
   };
 

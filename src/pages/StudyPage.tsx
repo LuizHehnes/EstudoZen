@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Timer } from '../components/Timer';
 import { Stopwatch } from '../components/Timer/Stopwatch';
 import { AmbientSounds } from '../components/Audio/AmbientSounds';
+import { StopAllAudioButton } from '../components/Audio/StopAllAudioButton';
 import { NotificationBlocker } from '../components/Focus/NotificationBlocker';
 import { useStudySession } from '../context/StudySessionContext';
 import { statsService } from '../services/statsService';
@@ -62,13 +63,21 @@ export const StudyPage: React.FC = () => {
   return (
     <div className="space-y-8 pb-20 animate-fade-in">
       {/* header */}
-      <div className="space-y-2">
-        <h1 className="text-3xl md:text-4xl font-heading font-bold text-light-text-primary dark:text-dark-text-primary">
-          Área de Estudo
-        </h1>
-        <p className="text-light-text-secondary dark:text-dark-text-secondary text-lg">
-          Ferramentas para maximizar sua concentração e produtividade
-        </p>
+      <div className="flex items-center justify-between">
+        <div className="space-y-2">
+          <h1 className="text-3xl md:text-4xl font-heading font-bold text-light-text-primary dark:text-dark-text-primary">
+            Área de Estudo
+          </h1>
+          <p className="text-light-text-secondary dark:text-dark-text-secondary text-lg">
+            Ferramentas para maximizar sua concentração e produtividade
+          </p>
+        </div>
+
+        {/* Botão para parar todos os sons - posicionado no cabeçalho para fácil acesso */}
+        <StopAllAudioButton 
+          variant="ghost"
+          className="bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border"
+        />
       </div>
 
       {/* navigation tabs */}

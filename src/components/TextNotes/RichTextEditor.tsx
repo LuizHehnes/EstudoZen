@@ -118,7 +118,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         style.underline ? 'underline' : '',
         style.strikethrough ? 'line-through' : ''
       ].filter(Boolean).join(' ') || 'none',
-      color: style.color || '#000000',
+      color: style.color || 'currentColor',
       backgroundColor: style.backgroundColor || 'transparent',
       fontSize: style.fontSize ? `${style.fontSize}px` : '14px',
       fontFamily: style.fontFamily || 'inherit'
@@ -138,8 +138,8 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       title={title}
       className={`p-2 rounded transition-colors ${
         isActive
-          ? 'bg-primary-100 text-primary-600 border border-primary-200'
-          : 'hover:bg-gray-100 text-gray-600'
+          ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-800/50'
+          : 'hover:bg-light-surface dark:hover:bg-dark-surface text-light-text-muted dark:text-dark-text-muted'
       }`}
     >
       <Icon size={16} />
@@ -150,17 +150,17 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     return (
       <div
         onClick={() => setIsEditing(true)}
-        className="group relative p-3 rounded-lg border border-transparent hover:border-gray-200 hover:bg-gray-50 cursor-text min-h-[40px] transition-all"
+        className="group relative p-3 rounded-lg border border-transparent hover:border-light-border dark:hover:border-dark-border hover:bg-light-surface dark:hover:bg-dark-surface cursor-text min-h-[40px] transition-all"
       >
-        <div style={getTextStyles()}>
-          {content || 'Clique para editar...'}
+        <div style={getTextStyles()} className="text-light-text-primary dark:text-dark-text-primary">
+          {content || <span className="text-light-text-muted dark:text-dark-text-muted italic">Clique para editar...</span>}
         </div>
         <button
           onClick={(e) => {
             e.stopPropagation();
             onDelete();
           }}
-          className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-red-100 text-red-500 transition-opacity"
+          className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-error-100 dark:hover:bg-error-900/20 text-error-600 dark:text-error-400 transition-opacity"
           title="Excluir bloco"
         >
           <X size={14} />
@@ -170,9 +170,9 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   }
 
   return (
-    <div className="border border-gray-300 rounded-lg p-3 bg-white shadow-sm">
+    <div className="border border-light-border dark:border-dark-border rounded-lg p-3 bg-light-card dark:bg-dark-card shadow-soft dark:shadow-dark-soft">
       {/* Toolbar */}
-      <div className="flex flex-wrap gap-1 mb-3 p-2 bg-gray-50 rounded-lg">
+      <div className="flex flex-wrap gap-1 mb-3 p-2 bg-light-surface dark:bg-dark-surface rounded-lg">
         <ToolbarButton
           icon={Bold}
           isActive={style.bold}
@@ -198,24 +198,24 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           title="Riscado"
         />
 
-        <div className="w-px bg-gray-300 mx-1"></div>
+        <div className="w-px bg-light-border dark:bg-dark-border mx-1"></div>
 
         {/* Cor do texto */}
         <div className="relative" ref={colorPickerRef}>
           <button
             type="button"
             onClick={() => setShowColorPicker(!showColorPicker)}
-            className="p-2 rounded hover:bg-gray-100 text-gray-600 flex items-center gap-1"
+            className="p-2 rounded hover:bg-light-surface dark:hover:bg-dark-surface text-light-text-muted dark:text-dark-text-muted flex items-center gap-1"
             title="Cor do texto"
           >
             <Palette size={16} />
             <div
-              className="w-4 h-4 rounded border border-gray-300"
+              className="w-4 h-4 rounded border border-light-border dark:border-dark-border"
               style={{ backgroundColor: style.color || '#000000' }}
             ></div>
           </button>
           {showColorPicker && (
-            <div className="absolute top-full left-0 mt-1 p-2 bg-white border rounded-lg shadow-lg z-10">
+            <div className="absolute top-full left-0 mt-1 p-2 bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border rounded-lg shadow-medium dark:shadow-dark-medium z-10">
               <div className="grid grid-cols-4 gap-1">
                 {colorOptions.map((color) => (
                   <button
@@ -225,7 +225,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
                       handleStyleToggle('color', color);
                       setShowColorPicker(false);
                     }}
-                    className="w-6 h-6 rounded border border-gray-300 hover:scale-110 transition-transform"
+                    className="w-6 h-6 rounded border border-light-border dark:border-dark-border hover:scale-110 transition-transform"
                     style={{ backgroundColor: color }}
                     title={color}
                   ></button>
@@ -240,30 +240,27 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <button
             type="button"
             onClick={() => setShowBgColorPicker(!showBgColorPicker)}
-            className="p-2 rounded hover:bg-gray-100 text-gray-600 flex items-center gap-1"
+            className="p-2 rounded hover:bg-light-surface dark:hover:bg-dark-surface text-light-text-muted dark:text-dark-text-muted flex items-center gap-1"
             title="Cor de fundo"
           >
             <div
-              className="w-4 h-4 rounded border border-gray-300"
+              className="w-4 h-4 rounded border border-light-border dark:border-dark-border"
               style={{ backgroundColor: style.backgroundColor || 'transparent' }}
             ></div>
           </button>
           {showBgColorPicker && (
-            <div className="absolute top-full left-0 mt-1 p-2 bg-white border rounded-lg shadow-lg z-10">
+            <div className="absolute top-full left-0 mt-1 p-2 bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border rounded-lg shadow-medium dark:shadow-dark-medium z-10">
               <div className="grid grid-cols-4 gap-1">
                 {backgroundColorOptions.map((color) => (
                   <button
                     key={color}
                     type="button"
                     onClick={() => {
-                      handleStyleToggle('backgroundColor', color === 'transparent' ? undefined : color);
+                      handleStyleToggle('backgroundColor', color);
                       setShowBgColorPicker(false);
                     }}
-                    className="w-6 h-6 rounded border border-gray-300 hover:scale-110 transition-transform"
-                    style={{ 
-                      backgroundColor: color === 'transparent' ? '#ffffff' : color,
-                      backgroundImage: color === 'transparent' ? 'repeating-linear-gradient(45deg, transparent, transparent 2px, #ccc 2px, #ccc 4px)' : 'none'
-                    }}
+                    className="w-6 h-6 rounded border border-light-border dark:border-dark-border hover:scale-110 transition-transform"
+                    style={{ backgroundColor: color }}
                     title={color}
                   ></button>
                 ))}
@@ -277,14 +274,14 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <button
             type="button"
             onClick={() => setShowFontSizePicker(!showFontSizePicker)}
-            className="p-2 rounded hover:bg-gray-100 text-gray-600 flex items-center gap-1"
+            className="p-2 rounded hover:bg-light-surface dark:hover:bg-dark-surface text-light-text-muted dark:text-dark-text-muted flex items-center gap-1"
             title="Tamanho da fonte"
           >
             <Type size={16} />
-            <span className="text-xs">{style.fontSize || 14}</span>
+            <span className="text-xs">{style.fontSize || 14}px</span>
           </button>
           {showFontSizePicker && (
-            <div className="absolute top-full left-0 mt-1 p-2 bg-white border rounded-lg shadow-lg z-10 min-w-[120px]">
+            <div className="absolute top-full left-0 mt-1 p-2 bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border rounded-lg shadow-medium dark:shadow-dark-medium z-10 w-32">
               {fontSizeOptions.map((option) => (
                 <button
                   key={option.value}
@@ -293,72 +290,48 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
                     handleStyleToggle('fontSize', option.value);
                     setShowFontSizePicker(false);
                   }}
-                  className="block w-full text-left px-2 py-1 rounded hover:bg-gray-100 text-sm"
-                  style={{ fontSize: `${option.value}px` }}
+                  className={`block w-full text-left px-3 py-2 rounded hover:bg-light-surface dark:hover:bg-dark-surface text-light-text-primary dark:text-dark-text-primary ${
+                    style.fontSize === option.value ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400' : ''
+                  }`}
                 >
-                  {option.label} ({option.value}px)
+                  <span style={{ fontSize: `${option.value}px` }}>{option.label}</span>
                 </button>
               ))}
             </div>
           )}
         </div>
 
-        <div className="w-px bg-gray-300 mx-1"></div>
+        <div className="flex-1"></div>
 
-        {/* Tipo de bloco */}
-        <select
-          value={block.type}
-          onChange={(e) => onUpdate({ type: e.target.value as any })}
-          className="px-2 py-1 text-sm border border-gray-300 rounded"
+        {/* Ações */}
+        <button
+          type="button"
+          onClick={handleCancel}
+          className="p-2 rounded hover:bg-error-100 dark:hover:bg-error-900/20 text-error-600 dark:text-error-400"
+          title="Cancelar"
         >
-          <option value="text">Texto</option>
-          <option value="heading">Título</option>
-          <option value="bullet">Lista</option>
-          <option value="number">Lista Numerada</option>
-        </select>
+          <X size={16} />
+        </button>
+
+        <button
+          type="button"
+          onClick={handleSave}
+          className="p-2 rounded bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white"
+          title="Salvar"
+        >
+          <Save size={16} />
+        </button>
       </div>
 
-      {/* Editor de texto */}
+      {/* Editor */}
       <textarea
         ref={textareaRef}
         value={content}
         onChange={(e) => setContent(e.target.value)}
         style={getTextStyles()}
-        placeholder="Digite seu texto aqui..."
-        className="w-full min-h-[100px] p-2 border border-gray-200 rounded resize-none focus:outline-none focus:ring-2 focus:ring-primary-500"
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' && e.ctrlKey) {
-            handleSave();
-          }
-          if (e.key === 'Escape') {
-            handleCancel();
-          }
-        }}
+        className="w-full min-h-[80px] p-2 border border-light-border dark:border-dark-border rounded-lg bg-light-surface dark:bg-dark-surface focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:ring-opacity-50 transition-shadow text-light-text-primary dark:text-dark-text-primary"
+        placeholder="Digite seu conteúdo aqui..."
       />
-
-      {/* Botões de ação */}
-      <div className="flex justify-between items-center mt-3">
-        <div className="text-xs text-gray-500">
-          Ctrl+Enter para salvar • Esc para cancelar
-        </div>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 transition-colors"
-          >
-            Cancelar
-          </button>
-          <button
-            type="button"
-            onClick={handleSave}
-            className="px-3 py-1 text-sm bg-primary-600 text-white rounded hover:bg-primary-700 transition-colors flex items-center gap-1"
-          >
-            <Save size={14} />
-            Salvar
-          </button>
-        </div>
-      </div>
     </div>
   );
 }; 
