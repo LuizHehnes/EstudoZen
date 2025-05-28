@@ -1,4 +1,4 @@
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { TimerProvider } from './context/TimerContext';
 import { AudioProvider } from './context/AudioContext';
 import { StudySessionProvider } from './context/StudySessionContext';
@@ -19,7 +19,7 @@ import { useState } from 'react';
 const AppContent = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
-
+  const navigate = useNavigate();
   const handleLogout = async () => {
     await logout();
     setShowUserMenu(false);
@@ -31,7 +31,7 @@ const AppContent = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <div className="flex items-center space-x-3">
+              <div onClick={() => navigate('/')} className="flex items-center space-x-3 cursor-pointer">
                 {/* logo com gradiente */}
                 <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
                   <span className="text-white font-bold text-lg">E</span>

@@ -7,8 +7,8 @@ export const PersistentIndicator: React.FC = () => {
   const { state, pauseStopwatch, startStopwatch, toggleVisibility } = useStudySession();
   const navigate = useNavigate();
 
-  // só mostra o indicador se tem cronômetro ativo (não mostra mais p/ áudio)
-  if (!state.isVisible && !state.stopwatch.isRunning && state.stopwatch.time === 0) {
+  // Só mostra o indicador se estiver visível
+  if (!state.isVisible) {
     return null;
   }
 
@@ -35,9 +35,24 @@ export const PersistentIndicator: React.FC = () => {
     }
   };
 
+  // Função específica para fechar o indicador
+  const handleClose = () => {
+    toggleVisibility();
+  };
+
   return (
-    <div className="fixed bottom-20 right-4 z-40 animate-slide-up">
-      <div className="bg-light-card dark:bg-dark-card rounded-xl shadow-strong dark:shadow-dark-strong border border-light-border dark:border-dark-border p-4 max-w-sm">
+    <div className="fixed bottom-24 sm:bottom-20 right-4 z-40 animate-slide-up">
+      <div className="bg-light-card dark:bg-dark-card rounded-xl shadow-strong dark:shadow-dark-strong border border-light-border dark:border-dark-border p-4 max-w-sm relative">
+        {/* Botão de fechar absoluto no canto superior direito */}
+        <button
+          onClick={handleClose}
+          className="absolute -top-3 -right-3 p-1.5 bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border rounded-full shadow-md hover:bg-error-100 dark:hover:bg-error-900/30 text-light-text-muted dark:text-dark-text-muted hover:text-error-600 dark:hover:text-error-400 transition-colors"
+          title="Fechar"
+          aria-label="Fechar cronômetro"
+        >
+          <X size={18} strokeWidth={2.5} />
+        </button>
+        
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
@@ -46,20 +61,14 @@ export const PersistentIndicator: React.FC = () => {
               Cronômetro Ativo
             </span>
           </div>
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center">
             <button
               onClick={handleGoToStudyPage}
-              className="p-1 text-light-text-muted dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+              className="p-1.5 text-light-text-muted dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
               title="Ir para Área de Estudo"
+              aria-label="Expandir área de estudo"
             >
-              <Maximize2 size={16} />
-            </button>
-            <button
-              onClick={toggleVisibility}
-              className="p-1 text-light-text-muted dark:text-dark-text-muted hover:text-error-600 dark:hover:text-error-400 transition-colors"
-              title="Minimizar"
-            >
-              <X size={16} />
+              <Maximize2 size={18} />
             </button>
           </div>
         </div>

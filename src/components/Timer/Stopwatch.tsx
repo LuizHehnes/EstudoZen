@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Play, Pause, Square, RotateCcw, Maximize2 } from 'lucide-react';
 import { useStudySession } from '../../context/StudySessionContext';
 import { useStudyMode } from '../../context/StudyModeContext';
@@ -11,16 +11,21 @@ interface StopwatchProps {
 export const Stopwatch: React.FC<StopwatchProps> = ({ onTimeUpdate, className = '' }) => {
   const { state, startStopwatch, pauseStopwatch, resetStopwatch, recordActivity } = useStudySession();
   const { enterStudyMode } = useStudyMode();
+  // Referência para controlar se já registramos a atividade para este estado
+  const lastRunningState = useRef(state.stopwatch.isRunning);
 
   // notifica mudanças de tempo p/ componentes pai
   useEffect(() => {
     onTimeUpdate?.(state.stopwatch.time);
   }, [state.stopwatch.time, onTimeUpdate]);
 
-  // registra atividade quando cronômetro é usado
+  // registra atividade apenas quando o estado muda, não em cada renderização
   useEffect(() => {
-    if (state.stopwatch.isRunning) {
-      recordActivity('Cronômetro iniciado');
+    if (state.stopwatch.isRunning !== lastRunningState.current) {
+      if (state.stopwatch.isRunning) {
+        recordActivity('Cronômetro iniciado');
+      }
+      lastRunningState.current = state.stopwatch.isRunning;
     }
   }, [state.stopwatch.isRunning, recordActivity]);
 

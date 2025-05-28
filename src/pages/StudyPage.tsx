@@ -18,19 +18,35 @@ export const StudyPage: React.FC = () => {
   // Carrega estatísticas
   useEffect(() => {
     const loadStats = async () => {
-      const currentStats = await statsService.getStats();
-      setStats(currentStats);
+      try {
+        const currentStats = await statsService.getStats();
+        setStats(currentStats);
+      } catch (error) {
+        console.error("Erro ao carregar estatísticas:", error);
+      }
     };
 
     loadStats();
 
     // Listener para atualizações em tempo real
-    const unsubscribe = statsService.addListener((newStats) => {
-      setStats(newStats);
-    });
+    // Usando uma referência para evitar recriações de função e ciclos de dependência
+    const handleStatsUpdate = (newStats: StatsData) => {
+      setStats(prevStats => {
+        // Apenas atualiza se realmente houver mudanças
+        if (!prevStats || JSON.stringify(newStats) !== JSON.stringify(prevStats)) {
+          return newStats;
+        }
+        return prevStats;
+      });
+    };
 
-    return unsubscribe;
-  }, []);
+    const unsubscribe = statsService.addListener(handleStatsUpdate);
+
+    return () => {
+      // Garante que a função de limpeza seja chamada corretamente
+      if (unsubscribe) unsubscribe();
+    };
+  }, []); // Dependência vazia para executar apenas uma vez na montagem
 
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);

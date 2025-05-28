@@ -44,6 +44,7 @@ type StudySessionAction =
   | { type: 'TICK_STOPWATCH' }
   | { type: 'SET_ACTIVE_SOUND'; payload: ActiveSound | null }
   | { type: 'TOGGLE_VISIBILITY' }
+  | { type: 'SET_VISIBILITY'; payload: boolean }
   | { type: 'RECORD_ACTIVITY'; payload: string }
   | { type: 'LOAD_STATE'; payload: Partial<StudySessionState> };
 
@@ -125,6 +126,12 @@ function studySessionReducer(state: StudySessionState, action: StudySessionActio
       return {
         ...state,
         isVisible: !state.isVisible,
+      };
+    
+    case 'SET_VISIBILITY':
+      return {
+        ...state,
+        isVisible: action.payload,
       };
     
     case 'RECORD_ACTIVITY':
@@ -270,13 +277,26 @@ export function StudySessionProvider({ children }: StudySessionProviderProps) {
   };
 
   const toggleVisibility = () => {
-    dispatch({ type: 'TOGGLE_VISIBILITY' });
+    // Sempre permite esconder o indicador, mesmo com o cronômetro rodando
+    // Mas se o indicador estiver oculto e o cronômetro estiver rodando, mostra o indicador
+    if (!state.isVisible && state.stopwatch.isRunning) {
+      dispatch({ type: 'SET_VISIBILITY', payload: true });
+    } else {
+      dispatch({ type: 'SET_VISIBILITY', payload: !state.isVisible });
+    }
   };
 
   const recordActivity = (activity: string) => {
+    // Evita a duplicação do registro de atividade no statsService
+    // Primeiro dispatch para o estado local
     dispatch({ type: 'RECORD_ACTIVITY', payload: activity });
-    // Registra também no serviço de estatísticas
-    statsService.recordActivity(activity, state.stopwatch.sessionId || undefined);
+    
+    // Apenas registra no serviço de estatísticas se tiver um ID de sessão
+    // Isso previne chamadas recursivas quando o statsService notifica mudanças
+    if (state.stopwatch.sessionId) {
+      // Registra no serviço de estatísticas
+      statsService.recordActivity(activity, state.stopwatch.sessionId);
+    }
   };
 
   return (
